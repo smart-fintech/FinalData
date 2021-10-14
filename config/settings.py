@@ -28,7 +28,7 @@ SECRET_KEY = '=^dz+bda_coz4b13m27a@l2p0(k*b5u_gm22cpy-7k30y0zupe'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*','0.0.0.0']
 
 AUTH_USER_MODEL='accountapp.User'
 
@@ -102,26 +102,26 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 CORS_ORIGIN_ALLOW_ALL=True
 ALLOWED_HOSTS=['*']
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'pp', 
-#         'USER': 'pp', 
-#         'PASSWORD':'pp',  
-#         'HOST': 'localhost', 
-#         'PORT': '5432',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'fintech', 
+        'USER': 'postgres', 
+        'PASSWORD':'admin123',  
+        'HOST': 'localhost', 
+        'PORT': '5432',
+    }
+}
 
 AUTH_USER_MODEL = 'accountapp.User'
 REST_FRAMEWORK = {
