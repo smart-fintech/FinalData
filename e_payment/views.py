@@ -620,6 +620,86 @@ class Newvoucherpost(generics.ListCreateAPIView):
         data+='</AMOUNT></ALLLEDGERENTRIES.LIST></VOUCHER>'
         data+='</TALLYMESSAGE></DATA></BODY></ENVELOPE>'
         req = requests.post(url=url, data=data)
+        if model.EditLegder!='' and model.EditLegder2!='':
+            print('Done')
+            # url='http://192.168.29.141:9000'
+            # data='<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Import</TALLYREQUEST><TYPE>Data</TYPE>'
+            # data+='<ID>Vouchers</ID></HEADER><BODY><DESC><STATICVARIABLES><SVCURRENTCOMPANY>'+str(model.bank.bankname.companyname.comp_name)+'</SVCURRENTCOMPANY></STATICVARIABLES></DESC><DATA><TALLYMESSAGE>'
+            # data+='<VOUCHER><DATE>'+str(newdate)+'</DATE><NARRATION>'+model.Transaction+'</NARRATION>'
+            # data+='<VOUCHERTYPENAME>Payment</VOUCHERTYPENAME>'
+            # data+='<VOUCHERNUMBER>3</VOUCHERNUMBER><ALLLEDGERENTRIES.LIST>'
+            # data+='<LEDGERNAME>'+model.EditLegder+'</LEDGERNAME><ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>'
+            # data+='<AMOUNT>'+str(model.EditLegderamount)+'</AMOUNT></ALLLEDGERENTRIES.LIST>'
+            # data+='<ALLLEDGERENTRIES.LIST><LEDGERNAME>'+str(model.EditLegder2)+'</LEDGERNAME>'
+            # data+='<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE><AMOUNT>'+model.EditLegder2amount+'</AMOUNT></ALLLEDGERENTRIES.LIST>'
+            # data+='</VOUCHER></TALLYMESSAGE></DATA></BODY></ENVELOPE>'
+            # req = requests.post(url=url, data=data)
+            if model.ListLegder2!='' and  model.ListAmount2!='':
+                list1=[]
+                list2=[]
+                x=model.ListLegder2
+                a=x.split(',')
+                y=model.ListAmount2
+                b=y.split(',')
+                for a1 in a:
+                    list1.append(a1)
+                for b1 in b:
+                    list2.append(b1)
+                print(list1,list2)
+                res = {}
+                for key in list1:
+                    for value in list2:
+                        res[key] = value
+                        list2.remove(value)
+                        break   
+                for i,j in res.items():
+                    y=-(float(i))
+                    # url='http://192.168.29.141:9000'
+                    # data='<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Import</TALLYREQUEST><TYPE>Data</TYPE>'
+                    # data+='<ID>Vouchers</ID></HEADER><BODY><DESC><STATICVARIABLES><SVCURRENTCOMPANY>'+str(model.bank.bankname.companyname.comp_name)+'</SVCURRENTCOMPANY></STATICVARIABLES></DESC><DATA><TALLYMESSAGE>'
+                    # data+='<VOUCHER><DATE>'+str(newdate)+'</DATE><NARRATION>'+model.Transaction+'</NARRATION>'
+                    # data+='<VOUCHERTYPENAME>Payment</VOUCHERTYPENAME>'
+                    # data+='<VOUCHERNUMBER>3</VOUCHERNUMBER><ALLLEDGERENTRIES.LIST>'
+                    # data+='<LEDGERNAME>'+j+'</LEDGERNAME><ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>'
+                    # data+='<AMOUNT>'+str(i)+'</AMOUNT></ALLLEDGERENTRIES.LIST>'
+                    # data+='<ALLLEDGERENTRIES.LIST><LEDGERNAME>'+str(model.bank)+'</LEDGERNAME>'
+                    # data+='<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE><AMOUNT>'+str(y)+'</AMOUNT></ALLLEDGERENTRIES.LIST>'
+                    # data+='</VOUCHER></TALLYMESSAGE></DATA></BODY></ENVELOPE>'
+                    # req = requests.post(url=url, data=data)
+            elif model.ListLegder1!='' and  model.ListAmount1!='':
+                list1=[]
+                list2=[]
+                x=model.ListLegder1
+                a=x.split(',')
+                y=model.ListAmount1
+                b=y.split(',')
+                for a1 in a:
+                    list1.append(a1)
+                for b1 in b:
+                    list2.append(b1)
+                print(list1,list2)
+                res = {}
+                for key in list1:
+                    for value in list2:
+                        res[key] = value
+                        list2.remove(value)
+                        break   
+                for i,j in res.items():
+                    print(i,j)
+                    x=-(float(j))
+                    print(x)
+                    # url='http://192.168.29.141:9000'
+                    # data='<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Import</TALLYREQUEST><TYPE>Data</TYPE>'
+                    # data+='<ID>Vouchers</ID></HEADER><BODY><DESC><STATICVARIABLES><SVCURRENTCOMPANY>'+str(model.bank.bankname.companyname.comp_name)+'</SVCURRENTCOMPANY></STATICVARIABLES></DESC><DATA><TALLYMESSAGE>'
+                    # data+='<VOUCHER><DATE>'+str(newdate)+'</DATE><NARRATION>'+model.Transaction+'</NARRATION>'
+                    # data+='<VOUCHERTYPENAME>Payment</VOUCHERTYPENAME>'
+                    # data+='<VOUCHERNUMBER>3</VOUCHERNUMBER><ALLLEDGERENTRIES.LIST>'
+                    # data+='<LEDGERNAME>'+i+'</LEDGERNAME><ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>'
+                    # data+='<AMOUNT>'+str(j)+'</AMOUNT></ALLLEDGERENTRIES.LIST>'
+                    # data+='<ALLLEDGERENTRIES.LIST><LEDGERNAME>'+str(model.bank)+'</LEDGERNAME>'
+                    # data+='<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE><AMOUNT>'+str(x)+'</AMOUNT></ALLLEDGERENTRIES.LIST>'
+                    # data+='</VOUCHER></TALLYMESSAGE></DATA></BODY></ENVELOPE>'
+                    # req = requests.post(url=url, data=data)
         return Response(status=status.HTTP_201_CREATED)
 
 class Legderlist(generics.ListCreateAPIView):
