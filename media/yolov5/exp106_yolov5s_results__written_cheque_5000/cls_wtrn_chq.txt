@@ -1,0 +1,1 @@
+﻿names: ['date','customer_name','amount','account_number','bank_name','ifsc_code','cheque_number','amount_words','micr','txn_code','san']

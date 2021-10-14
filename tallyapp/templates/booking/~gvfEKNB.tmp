@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<body>
+  <h1> Please create group </h1>
+    <form method="post" action=" ">
+        {% csrf_token %}
+        <label>grp_name: </label>
+        <input name="grp_name">
+        <br>
+        <label>main_grp: </label>
+        <input name="main_grp">
+        <br>
+        <label>ladeger_name: </label>
+        <input name="ladeger_name">
+        <br>
+        <label>open_bal: </label>
+        <input name="open_bal">
+        <br>
+      
+        <!-- <label>grup_name: </label>
+        <input name="grup_name">
+        <br> -->
+        <input type="submit" value="Submit">
+    </form>
+        </body>
+        </html>
+
+      

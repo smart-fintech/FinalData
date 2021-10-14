@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{name}}</title>
+    
+</head>
+<body>
+
+    <h1> Please create group </h1>
+    <form method="post" action=" ">
+        {% csrf_token %}
+        <label>from_dt: </label>
+        <input name="from_dt">
+        <br>
+        <label>to_dt: </label>
+        <input name="to_dt">
+        <br>
+        <!-- <label>grup_name: </label>
+        <input name="grup_name">
+        <br> -->
+        <input type="submit" value="Submit">
+    </form>

@@ -1,0 +1,5 @@
+﻿train: ../train/images
+val: ../valid/images
+
+nc: 6
+names: ['whl_chq', 'payee', 'rupee_w1', 'rupee_w2', 'rupee_n', 'date']

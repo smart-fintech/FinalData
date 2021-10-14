@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<body>
+  <h1> Please create voucher </h1>
+    <form method="post" action=" ">
+        {% csrf_token %}
+        <label>led_date: </label>
+        <input name="led_date">
+        <br>
+        <label>naration: </label>
+        <input name="naration">
+        <br>
+        <label>ladeger_name: </label>
+        <input name="ladeger_name">
+        <br>
+        <label>led_dr: </label>
+        <input name="led_dr">
+        <br>
+        <label>bank_name: </label>
+        <input name="bank_name">
+        <!-- <br>
+        <label>led_mobile: </label>
+        <input type="text" name="led_mobile">
+        <br> -->
+        <br>
+        <label>led_cr: </label>
+        <input type="text" name="led_cr">
+        <br>
+        <!-- <label>No of Seats: </label>
+        <input type="number" name="seat">
+        <br> -->
+        <!-- <label>Projector Screen</label>
+        <select name="projector">
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select> -->
+        <!-- <br>
+        <label>Video conference</label>
+        <select name="video">
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select> -->
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+</body>
