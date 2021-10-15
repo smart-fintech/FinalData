@@ -57,7 +57,7 @@ class BankDetailsViews(generics.ListAPIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        serializer.save(finalbankname=serializer.data['bankname'])
         return Response(status=status.HTTP_204_NO_CONTENT)
 class EpaymentDataPost(generics.ListCreateAPIView):
     authentication_classes = (SessionAuthentication,)
