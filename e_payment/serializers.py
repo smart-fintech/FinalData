@@ -15,11 +15,11 @@ class BankDataSerializer(serializers.ModelSerializer):
     class Meta:
         model=BankDetails
         # fields='__all__'
-        fields=['id','companyname','bankname','ifsc_code','account_no']
+        fields=['id','comp_name','bankname','finalbankname','ifsc_code','account_no']
 
     def to_representation(self, instance):
         data = super(BankDataSerializer, self).to_representation(instance)
-        data['companyname'] = instance.companyname.comp_name
+        # data['comp_name'] = instance.comp_name.comp_name
         data['bankname'] = instance.bankname.mstbnk_nm
         return data
 
