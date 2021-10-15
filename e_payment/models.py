@@ -10,9 +10,9 @@ class masterBank(models.Model):
     def __str__(self):
         return self.mstbnk_nm
 
-class BankDetails(models.Model):
-    companyname=models.ForeignKey(companydata,on_delete=models.CASCADE,null=True,blank=True)
+comp_name=models.ForeignKey(companydata,on_delete=models.CASCADE,null=True,blank=True)
     bankname=models.ForeignKey(masterBank,on_delete=models.CASCADE,null=True,blank=True)
+    finalbankname=models.CharField(max_length=40,null=True,blank=True)
     ifsc_code=models.CharField(max_length=100,null=True,blank=True)
     account_no=models.CharField(max_length=100,null=True,blank=True)
     
