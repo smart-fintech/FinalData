@@ -1,3 +1,4 @@
+from django.db import models
 from django.shortcuts import render
 from django.http import HttpResponse
 import requests
@@ -11,46 +12,91 @@ from django.views import View
 from django.contrib.auth.forms import (UserCreationForm, AuthenticationForm)
 import xml.etree.cElementTree as ET
 from xml.etree import ElementTree
+from accountapp.models import User
 # from .demo import MainWindow
 # Create your views here.
+import socket
+
+# Python Program to Get IP Address
+import socket   
+import netifaces as ni
+from getmac import get_mac_address as gma
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes,api_view
+import psutil,os
+import netifaces
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
 def get_ledeger(request):
     login_user=request.user
-    print("$$$$$$$$$$$$$$444",login_user)
-    # url="http://localhost:9999"
-    # url="http://192.168.1.105:9000"
-    url="http://192.168.29.7:9000"
-    # url='http://192.168.29.141:9000'
-    data="<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE><ID>List of Ledgers</ID>"
-    data+="</HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES></DESC></BODY></ENVELOPE>"
-    request=requests.post(url=url,data=data)
-    response=request.text.strip().replace("&amp;","and")
-    responseXML = ET.fromstring(response)
-    namedata=[]
-    data2=ladgernamedata.objects.filter(ledeger_email=login_user)
-    for i in data2:
-       namedata.append(i.ledeger_name)
-    for data in responseXML.findall('./BODY/DATA/COLLECTION/LEDGER'):
-        getdata=(data.get('NAME'))
-        data1=getdata
-
-        if data1 not in namedata:
-            dbsave=ladgernamedata(ledeger_name=data1,ledeger_email=login_user)
-            dbsave.save()
-    return JsonResponse({'data1':'sucefully saved data into database'})
+    user_model=User.objects.filter(created_by__icontains=login_user.created_by)
+    for x in user_model:
+        model=companydata.objects.filter(user_company=x)
+        for y in model:
+            comp=str(y)
+            getdata=''
+            url='http://'+ y.comp_ip_address+':9000'
+            data = '<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE>'
+            data += '<ID>ListOfCompanies</ID></HEADER><BODY><DESC><STATICVARIABLES><SVCurrentCompany>Digital Docsys Pvt Ltd</SVCurrentCompany><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>'
+            data += '</STATICVARIABLES><TDL><TDLMESSAGE><COLLECTION Name="ListOfCompanies"><TYPE>Company</TYPE>'
+            data += '<FETCH>Name,CompanyNumber</FETCH></COLLECTION></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>'
+            req = requests.post(url=url, data=data)
+            res = Et.fromstring(req.text.strip())
+            for cmp in res.findall('./BODY/DATA/COLLECTION/COMPANY'):
+                getdata=(cmp.find('NAME').text)
+            print(getdata,comp)
+            if getdata==comp:
+                url='http://'+ y.comp_ip_address+':9000'
+                data="<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE><ID>List of Ledgers</ID>"
+                data+="</HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES></DESC></BODY></ENVELOPE>"
+                request=requests.post(url=url,data=data)
+                print(data)
+                response=request.text.strip().replace("&amp;","and")
+                responseXML = ET.fromstring(response)
+                print(response)
+                namedata=[]
+                data2=ladgernamedata.objects.filter(created_by=login_user)
+                for i in data2:
+                    namedata.append(i.ledeger_name)
+                for data in responseXML.findall('./BODY/DATA/COLLECTION/LEDGER'):
+                    getdata=(data.get('NAME'))
+                    data1=getdata
+                    print("%%%%%%%%%%%",data1)
+                    if data1 not in namedata:
+                        dbsave=ladgernamedata(ledeger_name=data1,created_by=login_user)
+                        dbsave.save()
+            else:
+                return HttpResponse('No Data')
+    return HttpResponse(status=status.HTTP_200_OK)
+    
 from xml.etree import ElementTree as Et
 
 from uuid import getnode as get_mac
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
 def get_company_name(request):
     login_user=request.user
-    print("$$$$$$$$$$$$$$444",login_user)
-    # url="http://localhost:9999"
-    # url="http://192.168.1.105:9000"
-    url="http://192.168.29.7:9000"
+    x=''
+    interfaces = ni.interfaces()
+    interfaces = netifaces.interfaces()
+    interfaces.remove('lo')
+    out_interfaces = dict()
+    for interface in interfaces:
+        addrs = netifaces.ifaddresses(interface)
+        out_addrs = dict()
+        if netifaces.AF_INET in addrs.keys():
+            out_addrs["ipv4"] = addrs[netifaces.AF_INET]
+        out_interfaces[interface] = out_addrs
+        x=out_interfaces['enp6s0']['ipv4'][0]['addr']
+    mac_address=gma()
+    url="http://"+x+":9000"
+    print("$$$$$$$$$$$$$$yyyggggy444",login_user)
     data = '<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE>'
     data += '<ID>ListOfCompanies</ID></HEADER><BODY><DESC><STATICVARIABLES><SVCurrentCompany>Digital Docsys Pvt Ltd</SVCurrentCompany><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>'
     data += '</STATICVARIABLES><TDL><TDLMESSAGE><COLLECTION Name="ListOfCompanies"><TYPE>Company</TYPE>'
     data += '<FETCH>Name,CompanyNumber</FETCH></COLLECTION></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>'
-    req = requests.post(url="http://localhost:9000", data=data)
+    req = requests.post(url=url, data=data)
     res = Et.fromstring(req.text.strip())
     namedata=[]
     data2=companydata.objects.filter(user_company=login_user)
@@ -58,18 +104,17 @@ def get_company_name(request):
         print("****************",i.comp_name)
         namedata.append(i.comp_name)
     for cmp in res.findall('./BODY/DATA/COLLECTION/COMPANY'):
-        getdata=cmp.get('NAME')
+        getdata=(cmp.find('NAME').text)
         getdata1=(cmp.find('COMPANYNUMBER').text)
-
         comname=getdata
         compid=getdata1
         print("CCCCCCCCCCCCCCCCCCCC",getdata)
         print("CCCCCCCCCCCCCCCCCCCCrrr",getdata1)
         if getdata not in namedata:
-            dbsave=companydata(comp_name=comname,comp_id=compid,user_company=login_user)
+            dbsave=companydata(comp_name=comname,comp_id=compid,user_company=login_user,comp_ip_address=x,mac_ad=mac_address)
             dbsave.save() 
-       
-    return HttpResponse("sucefully get")    
+    return HttpResponse({'data1':'sucefully fetch data from tally'})     
+  
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -224,16 +269,19 @@ class ladegerList(APIView):
 
 class CompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = CompanySerializer
     def get(self, request, format=None):
-        # login_user=request.user
-        snippets = companydata.objects.all()
-        serializer = CompanySerializer(snippets, many=True)
-        return Response(serializer.data)  
+        try:
+            login_user=request.user
+            snippets = companydata.objects.filter(user_company=login_user)
+            serializer = CompanySerializer(snippets, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+           return HttpResponse("something get worn please cntect admin")       
 class UpdateCompany(APIView):
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     def get_object(self, pk):
         try:
             return companydata.objects.get(pk=pk)
