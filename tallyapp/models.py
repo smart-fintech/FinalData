@@ -29,6 +29,7 @@ class companydata(models.Model):
     comp_website=models.CharField(max_length=400, blank=True, null=True)
     comp_gstin=models.CharField(max_length=400, blank=True, null=True)
     comp_id=models.CharField(max_length=100,null=True,blank=True)
+    comp_ip_address=models.CharField(max_length=100,null=True,blank=True)
     mac_ad=models.CharField(max_length=100,null=True,blank=True)
     vat_no=models.CharField(max_length=100,null=True,blank=True)
     cst_no=models.CharField(max_length=100,null=True,blank=True)
