@@ -28,8 +28,8 @@ SECRET_KEY = '=^dz+bda_coz4b13m27a@l2p0(k*b5u_gm22cpy-7k30y0zupe'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','0.0.0.0']
-
+# ALLOWED_HOSTS = ['*','0.0.0.0']
+ALLOWED_HOSTS=['*']
 AUTH_USER_MODEL='accountapp.User'
 
 
@@ -112,13 +112,22 @@ WSGI_APPLICATION = 'config.wsgi.application'
 CORS_ORIGIN_ALLOW_ALL=True
 ALLOWED_HOSTS=['*']
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'fintech', 
+#         'USER': 'postgres', 
+#         'PASSWORD':'admin123',  
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'fintech', 
-        'USER': 'postgres', 
-        'PASSWORD':'admin123',  
-        'HOST': 'localhost', 
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'Intelligere',
+        'PASSWORD':'mypassword',
+        'USER':'user_name',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }

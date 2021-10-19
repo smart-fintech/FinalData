@@ -56,13 +56,13 @@ class CustomRedirect(HttpResponsePermanentRedirect):
 # for register new user
 # loging api
 class RegisterView(generics.GenericAPIView):
-    # authentication_classes = (TokenAuthentication,)
+    authentication_classes = (TokenAuthentication,)
     serializer_class = RegisterSerializer
 
-    def post(self,request):
+    def post(self,request):   
         email = request.data
         serializer = self.serializer_class(data=email)
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid()
         serializer.save()
         user_data=serializer.data
         # email=request.user_data['email']
@@ -80,10 +80,12 @@ class RegisterView(generics.GenericAPIView):
                 'email_subject': 'Verify your email'}        
         Util.send_email(data)
         return Response(user_data,status=status.HTTP_201_CREATED)
+        # except Exception as e:
+        #    return HttpResponse("something get worn please cntect admin")
 
 class UserRegisterView(generics.GenericAPIView):
-    # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    authentication_classes = (SessionAuthentication,)
+    # permission_classes = (IsAuthenticated,)   
     serializer_class = UserRegisterSerializer
     # renderer_classes = (UserRenderer,)
     def post(self, request):
@@ -114,8 +116,7 @@ class UserLoginAPIView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        email = request.POST.get('email', '')
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid()
         return Response(serializer.data, status=status.HTTP_200_OK)
         # except Exception as e:
         #    return HttpResponse("something get worn please cntect admin")    
@@ -148,6 +149,7 @@ class LoginAPIView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
+        print(serializer)
         email = request.POST.get('email','')
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -186,7 +188,7 @@ class LogoutAPIView(generics.GenericAPIView):
 
 class findadminuserdata(views.APIView):
     # authentication_classes = (TokenAuthentication,)
-    # authentication_classes = (SessionAuthentication,)
+    authentication_classes = (SessionAuthentication,)
     # permission_classes = (AccessPermission,)
     serializer_class = admingetotheruserdataserializer
     def get(self, request, format=None):

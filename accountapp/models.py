@@ -46,7 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # username = models.CharField(max_length=255, unique=True, db_index=True)
     name=models.CharField(max_length=50,blank=True, null=True)
     email = models.EmailField(max_length=255, unique=True, db_index=True)
-    mobile=models.PositiveIntegerField(blank=True, null=True)
+    mobile=models.CharField(max_length=12,blank=True, null=True)
     Otheruser_type = (
         ("CA", "CA"),
         ("Accountant", "Accountant"),
@@ -58,6 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_delete = models.BooleanField(null=True)
     is_edit = models.BooleanField(null=True)
     is_views = models.BooleanField(null=True)
+    created_by=models.CharField(max_length=50,blank=True, null=True)
     # groups = models.ForeignKey(Group,blank=True,null=True,on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

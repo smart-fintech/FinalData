@@ -8,7 +8,6 @@ from rest_framework_simplejwt.tokens import RefreshToken,TokenError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=68, min_length=6, write_only=True)
@@ -20,7 +19,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['name', 'email', 'mobile',
-                  'password']
+                  'password', 'type', 'is_delete', 'is_edit', 'is_views']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -61,7 +60,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
-
 class UserLoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255, min_length=3)
     password = serializers.CharField(
@@ -79,7 +77,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
         password = attrs.get('password', '')
 
         user = auth.authenticate(email=email, password=password)
-
+        print(user)
         if not user:
             raise AuthenticationFailed('Invalid credentials, try again')
         if not user.is_active:
@@ -94,6 +92,9 @@ class UserLoginSerializer(serializers.ModelSerializer):
         }
 
         return super().validate(attrs)
+
+
+
 
 class admingetotheruserdataserializer(serializers.ModelSerializer):
     class Meta:
@@ -204,3 +205,4 @@ class LogoutSerializer(serializers.Serializer):
 
         except TokenError:
             self.fail('bad_token')
+ 

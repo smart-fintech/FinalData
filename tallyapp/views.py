@@ -30,44 +30,65 @@ import netifaces
 @permission_classes((IsAuthenticated, ))
 def get_ledeger(request):
     login_user=request.user
-    user_model=User.objects.filter(created_by__icontains=login_user.created_by)
-    for x in user_model:
-        model=companydata.objects.filter(user_company=x)
-        for y in model:
-            comp=str(y)
-            getdata=''
-            url='http://'+ y.comp_ip_address+':9000'
-            data = '<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE>'
-            data += '<ID>ListOfCompanies</ID></HEADER><BODY><DESC><STATICVARIABLES><SVCurrentCompany>Digital Docsys Pvt Ltd</SVCurrentCompany><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>'
-            data += '</STATICVARIABLES><TDL><TDLMESSAGE><COLLECTION Name="ListOfCompanies"><TYPE>Company</TYPE>'
-            data += '<FETCH>Name,CompanyNumber</FETCH></COLLECTION></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>'
-            req = requests.post(url=url, data=data)
-            res = Et.fromstring(req.text.strip())
-            for cmp in res.findall('./BODY/DATA/COLLECTION/COMPANY'):
-                getdata=(cmp.find('NAME').text)
-            print(getdata,comp)
-            if getdata==comp:
+    if request.user.is_superuser:
+        model=companydata.objects.filter(user_company=login_user)
+        for x in model:
+            url='http://'+ x.comp_ip_address+':9000'
+            data="<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE><ID>List of Ledgers</ID>"
+            data+="</HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES></DESC></BODY></ENVELOPE>"
+            request=requests.post(url=url,data=data)
+            print(data)
+            response=request.text.strip().replace("&amp;","and")
+            responseXML = ET.fromstring(response)
+            print(response)
+            namedata=[]
+            data2=ladgernamedata.objects.filter(created_by=login_user)
+            for i in data2:
+                namedata.append(i.ledeger_name)
+            for data in responseXML.findall('./BODY/DATA/COLLECTION/LEDGER'):
+                getdata=(data.get('NAME'))
+                data1=getdata
+                print("%%%%%%%%%%%",data1)
+                if data1 not in namedata:
+                    dbsave=ladgernamedata(ledeger_name=data1,created_by=login_user)
+                    dbsave.save()
+    else:               
+        user_model=User.objects.filter(created_by__icontains=login_user.created_by)
+        for x in user_model:
+            model=companydata.objects.filter(user_company=x)
+            for y in model:
+                comp=str(y)
+                getdata=''
                 url='http://'+ y.comp_ip_address+':9000'
-                data="<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE><ID>List of Ledgers</ID>"
-                data+="</HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES></DESC></BODY></ENVELOPE>"
-                request=requests.post(url=url,data=data)
-                print(data)
-                response=request.text.strip().replace("&amp;","and")
-                responseXML = ET.fromstring(response)
-                print(response)
-                namedata=[]
-                data2=ladgernamedata.objects.filter(created_by=login_user)
-                for i in data2:
-                    namedata.append(i.ledeger_name)
-                for data in responseXML.findall('./BODY/DATA/COLLECTION/LEDGER'):
-                    getdata=(data.get('NAME'))
-                    data1=getdata
-                    print("%%%%%%%%%%%",data1)
-                    if data1 not in namedata:
-                        dbsave=ladgernamedata(ledeger_name=data1,created_by=login_user)
-                        dbsave.save()
-            else:
-                return HttpResponse('No Data')
+                data = '<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE>'
+                data += '<ID>ListOfCompanies</ID></HEADER><BODY><DESC><STATICVARIABLES><SVCurrentCompany>Digital Docsys Pvt Ltd</SVCurrentCompany><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT>'
+                data += '</STATICVARIABLES><TDL><TDLMESSAGE><COLLECTION Name="ListOfCompanies"><TYPE>Company</TYPE>'
+                data += '<FETCH>Name,CompanyNumber</FETCH></COLLECTION></TDLMESSAGE></TDL></DESC></BODY></ENVELOPE>'
+                req = requests.post(url=url, data=data)
+                res = Et.fromstring(req.text.strip())
+                for cmp in res.findall('./BODY/DATA/COLLECTION/COMPANY'):
+                    getdata=(cmp.find('NAME').text)
+                print(getdata,comp)
+                if getdata==comp:
+                    url='http://'+ y.comp_ip_address+':9000'
+                    data="<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>EXPORT</TALLYREQUEST><TYPE>COLLECTION</TYPE><ID>List of Ledgers</ID>"
+                    data+="</HEADER><BODY><DESC><STATICVARIABLES><SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT></STATICVARIABLES></DESC></BODY></ENVELOPE>"
+                    request=requests.post(url=url,data=data)
+                    print(data)
+                    response=request.text.strip().replace("&amp;","and")
+                    responseXML = ET.fromstring(response)
+                    print(response)
+                    namedata=[]
+                    data2=ladgernamedata.objects.filter(created_by=login_user)
+                    for i in data2:
+                        namedata.append(i.ledeger_name)
+                    for data in responseXML.findall('./BODY/DATA/COLLECTION/LEDGER'):
+                        getdata=(data.get('NAME'))
+                        data1=getdata
+                        print("%%%%%%%%%%%",data1)
+                        if data1 not in namedata:
+                            dbsave=ladgernamedata(ledeger_name=data1,created_by=login_user)
+                            dbsave.save()
     return HttpResponse(status=status.HTTP_200_OK)
     
 from xml.etree import ElementTree as Et
