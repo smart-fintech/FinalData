@@ -61,7 +61,7 @@ class UploadCSVView(generics.CreateAPIView):
         login_user=request.user
         serializer_class = self.get_serializer(data=request.data)
         serializer_class.is_valid()
-        serializer_class.save(created_by=login_user)
+        serializer_class.save(user=login_user)
         return Response(status=status.HTTP_204_NO_CONTENT)
     def get(self, request, *args, **kwargs):
         query= Uploadcsv.objects.all()
