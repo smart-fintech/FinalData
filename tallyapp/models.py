@@ -19,7 +19,6 @@ class ladgernamedata(models.Model):
         return self.ledeger_name
 
 class companydata(models.Model):
-    comp_name=models.CharField(max_length=100)
     user_company=models.CharField(max_length=100)
     comp_phone = models.CharField(max_length=40, blank=True, null=True)
     comp_email=models.EmailField(blank=True, null=True)
