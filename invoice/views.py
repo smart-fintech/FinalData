@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from rest_framework.views import APIView
 from .models import BuyerData,SellerData,InvoiceData,Invoice,CSVInvoiceData,Uploadcsv,VoucherInvoiceEntry,CSvTableData
-from .serializers import AnotherMainSerializer,VoucherInvoiceDataSerializer,OtherInsurancedata, MainInvoice,ReciptReportSerializer, CreateReportSerializer,BuyerSerializer,companydataSerializer,SellerSerializer,Uploadcsvserializer1,InvoiceSerializer,InvoiceDataSerializer,Getcsvinvoicedata,FileUploadSerializer,MainInvoice,ladgernamedataSerializer
+from .serializers import AnotherMainSerializer,VoucherInvoiceDataSerializer,OtherInsurancedata, Uploadcsvserializer,MainInvoice,ReciptReportSerializer, CreateReportSerializer,BuyerSerializer,companydataSerializer,SellerSerializer,Uploadcsvserializer1,InvoiceSerializer,InvoiceDataSerializer,Getcsvinvoicedata,FileUploadSerializer,MainInvoice,ladgernamedataSerializer
 from rest_framework import generics, serializers,status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -82,12 +82,12 @@ class UploadCSVView(generics.CreateAPIView):
             raise Http404
     def get(self, request, pk, format=None):
         snippet = self.get_object(pk)
-        serializer = Uploadcsvserializer1(snippet)
+        serializer = Uploadcsvserializer(snippet)
         return Response(serializer.data)
     
     def patch(self, request,pk, *args, **kwargs):
         snippet = self.get_object(pk)
-        serializer = Uploadcsvserializer1(snippet, data=request.data)
+        serializer = Uploadcsvserializer(snippet, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
