@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import Buyerdataeditdelete,Invoicetotal, InvoiceOtherdata,MainInvoiceShow, Voucherentry,CreateInvoicefilter, BuyerDetailsView, SellerDetailsView, InvoiceDetailsView, InvoiceDataView,CsvInvoicedataAPI,GetcsvInvoicedataAPI,UploadCSVView,UpdatecsvDataAPI,NewMainInvoiceShow,LegderShow,CompanyShow,Sellerdataeditdelete,Invoiceeeditdelete,Invoicedataeeditdelete,ReceiptReportViews,ReceiptInvoicefilter
+from .views import Buyerdataeditdelete,Invoicetotal, InvoiceOtherdata,MainInvoiceShow,UpdateHsndetails, Voucherentry,CreateInvoicefilter, BuyerDetailsView, SellerDetailsView, InvoiceDetailsView, InvoiceDataView,CsvInvoicedataAPI,GetcsvInvoicedataAPI,UploadCSVView,UpdatecsvDataAPI,NewMainInvoiceShow,LegderShow,CompanyShow,Sellerdataeditdelete,Invoiceeeditdelete,Invoicedataeeditdelete,ReceiptReportViews,ReceiptInvoicefilter
 
 urlpatterns = [
     path('receiptinvoice/', ReceiptReportViews.as_view(), name='receiptinvoice'),
@@ -15,6 +15,7 @@ urlpatterns = [
     path('getcsvinvoice/',GetcsvInvoicedataAPI.as_view(), name='getcsvinvoice'),
     path('maininvoice/', MainInvoiceShow.as_view(), name='maininvoice'),
     path('UploadCSVView/', UploadCSVView.as_view(), name='UploadCSVView'),
+    path('UpdateHsndetails/<int:pk>/',UpdateHsndetails.as_view(),name='UpdateHsndetails'),
     path('UpdatecsvDataAPI/<int:pk>/',UpdatecsvDataAPI.as_view(),name='UpdatecsvDataAPI'),
     path('NewMainInvoiceShow/', NewMainInvoiceShow.as_view(), name='NewMainInvoiceShow'),
     path('buyeredit/<int:pk>/', Buyerdataeditdelete.as_view(), name='buyeredit'),
