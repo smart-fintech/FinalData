@@ -313,7 +313,7 @@ class UpdateCompany(APIView):
         serializer = UpdateCompanySerializer(snippet)
         return Response(serializer.data)
     
-    def put(self, request,pk, *args, **kwargs):
+    def patch(self, request,pk, *args, **kwargs):
         snippet = self.get_object(pk)
         serializer = UpdateCompanySerializer(snippet, data=request.data)
         if serializer.is_valid():
