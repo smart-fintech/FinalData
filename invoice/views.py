@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from rest_framework.views import APIView
 from .models import BuyerData,SellerData,InvoiceData,Invoice,CSVInvoiceData,Uploadcsv,VoucherInvoiceEntry,CSvTableData
-from .serializers import AnotherMainSerializer,VoucherInvoiceDataSerializer,OtherInsurancedata, MainInvoice,ReciptReportSerializer, CreateReportSerializer,BuyerSerializer,companydataSerializer,SellerSerializer,Uploadcsvserializer1,InvoiceSerializer,InvoiceDataSerializer,Getcsvinvoicedata,FileUploadSerializer,MainInvoice,Uploadcsvserializer,ladgernamedataSerializer
+from .serializers import AnotherMainSerializer,VoucherInvoiceDataSerializer,OtherInsurancedata, MainInvoice,ReciptReportSerializer, CreateReportSerializer,BuyerSerializer,companydataSerializer,SellerSerializer,Uploadcsvserializer1,InvoiceSerializer,InvoiceDataSerializer,Getcsvinvoicedata,FileUploadSerializer,MainInvoice,ladgernamedataSerializer
 from rest_framework import generics, serializers,status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -51,43 +51,47 @@ class LegderShow(APIView):
         serializer = ladgernamedataSerializer(snippets, many=True)
         return Response(serializer.data)  
 
+
 class UploadCSVView(generics.CreateAPIView):
     # authentication_classes = (SessionAuthentication,)
     # permission_classes = (IsAuthenticated,)
-    serializer_class = Uploadcsvserializer
+    serializer_class = Uploadcsvserializer1
 
     def post(self, request, *args, **kwargs):
         login_user=request.user
         serializer_class = self.get_serializer(data=request.data)
-        serializer_class.is_valid(raise_exception=True)
-        file = serializer_class.validated_data['file']
-        decoded_file = file.read().decode()
-        # upload_products_csv.delay(decoded_file, request.user.pk)
-        io_string = io.StringIO(decoded_file)
-        # reader = csv.reader(io_string)
-        reader=csv.DictReader(io_string)
-        for row in reader:
-            print(row)
-            try:
-                m=Uploadcsv.objects.get(Hsn_code=row.get('HSN/SAC Code'))
-                m.Rate=row.get('Rate/Unit')
-                m.Hsn_code=row.get('HSN/SAC Code')
-                m.Description=row.get('Description')
-                m.CGst_rate=row.get('CGST Rate')
-                m.SGst_rate=row.get('SGST Rate')
-                m.IGst_rate=row.get('IGST Rate')
-                m.Per=row.get('Per')
-                m.save()
-            except Uploadcsv.DoesNotExist:
-                user = Uploadcsv(Hsn_code=row.get('HSN/SAC Code'),Description=row.get('Description'),Rate=row.get('Rate/Unit'),CGst_rate=row.get('CGST Rate'),SGst_rate=row.get('SGST Rate'),IGst_rate=row.get('IGST Rate'),Per=row.get('Per'),user=login_user)
-                user.save()
+        serializer_class.is_valid()
+        serializer_class.save(created_by=login_user)
         return Response(status=status.HTTP_204_NO_CONTENT)
     def get(self, request, *args, **kwargs):
         query= Uploadcsv.objects.all()
         serializer=Uploadcsvserializer1(query,many=True)
         return Response(serializer.data)
-
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
+ class UpdateCompany(APIView):
+    # authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    def get_object(self, pk):
+        try:
+            return Uploadcsv.objects.get(pk=pk)
+        except Uploadcsv.DoesNotExist:
+            raise Http404
+    def get(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = Uploadcsvserializer1(snippet)
+        return Response(serializer.data)
+    
+    def patch(self, request,pk, *args, **kwargs):
+        snippet = self.get_object(pk)
+        serializer = Uploadcsvserializer1(snippet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class NewMainInvoiceShow(APIView):
     # authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
