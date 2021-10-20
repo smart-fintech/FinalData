@@ -452,6 +452,7 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
         queryset = self.get_object(pk)
         serializer=self.serializer_class(data=request.data,many=True)
         if serializer.is_valid():
+            queryset.Legder=request.data['Legder']
             queryset.ListAmount1=request.data['ListAmount1']
             queryset.ListLegder1=request.data['ListLegder1']
             queryset.ListAmount2=request.data['ListAmount2']
