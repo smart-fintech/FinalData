@@ -8,6 +8,7 @@ urlpatterns = [
     path('api/fetchladeger/', views.ladegerList.as_view()),
     path('getcompanynamedetails/', views.CompanyList.as_view()),
     path('UpdateCompany/<int:pk>/', views.UpdateCompany.as_view()),
+    path('UpdateLegder/<int:pk>/', views.UpdateLegder.as_view()),
     path('getladeger', views.get_ledeger, name='getladeger'),
     # path('createladeger', views.create_ledger, name='createladeger'),
     # path('createladeger',views.create_ladeger,name='createladeger'),
