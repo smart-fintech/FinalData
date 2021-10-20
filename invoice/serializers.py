@@ -13,15 +13,11 @@ class companydataSerializer(serializers.ModelSerializer):
         model = companydata
         fields = '__all__'
 
-
-class Uploadcsvserializer(serializers.Serializer):
-    file=serializers.FileField()
-    class Meta:
-        fields = ('file')
 class Uploadcsvserializer1(serializers.ModelSerializer):
     class Meta:
         model=Uploadcsv
-        fields = '__all__'
+        fields = ['Hsn_code','Description','CGst_rate','SGst_rate','IGst_rate','Per','Rate']
+
 class BuyerSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuyerData
