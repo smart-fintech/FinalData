@@ -112,25 +112,25 @@ WSGI_APPLICATION = 'config.wsgi.application'
 CORS_ORIGIN_ALLOW_ALL=True
 ALLOWED_HOSTS=['*']
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'fintech', 
-#         'USER': 'postgres', 
-#         'PASSWORD':'admin123',  
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Intelligere',
-        'PASSWORD':'mypassword',
-        'USER':'user_name',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'fintech', 
+        'USER': 'postgres', 
+        'PASSWORD':'admin123',  
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'Intelligere',
+#         'PASSWORD':'mypassword',
+#         'USER':'user_name',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 AUTH_USER_MODEL = 'accountapp.User'
 REST_FRAMEWORK = {
