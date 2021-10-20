@@ -117,7 +117,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'fintech', 
         'USER': 'postgres', 
-        'PASSWORD':'admin123',  
+        'PASSWORD':'admin123',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
