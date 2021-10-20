@@ -72,7 +72,7 @@ class UploadCSVView(generics.CreateAPIView):
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
- class UpdateCompany(APIView):
+ class UpdateHsndetails(APIView):
     # authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     def get_object(self, pk):
