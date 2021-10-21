@@ -67,10 +67,6 @@ class UploadCSVView(generics.CreateAPIView):
         query= Uploadcsv.objects.all()
         serializer=Uploadcsvserializer1(query,many=True)
         return Response(serializer.data)
-    def delete(self, request, pk, format=None):
-        snippet = self.get_object(pk)
-        snippet.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
     
 class UpdateHsndetails(APIView):
     # authentication_classes = (SessionAuthentication,)
@@ -92,6 +88,11 @@ class UpdateHsndetails(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 class NewMainInvoiceShow(APIView):
     # authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
