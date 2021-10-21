@@ -266,7 +266,7 @@ def creategrup(request):
 
 ############################# django restframework start here  #################################
 from tallyapp.models import ladgernamedata
-from tallyapp.serializers import UpdateCompanySerializer, ladegerSerializer,CompanySerializer,UpdateLegderSerializer
+from tallyapp.serializers import UpdateCompanySerializer, ladegerSerializer,CompanySerializer,UpdateLegderSerializer,NormalCompanySerializer
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -276,27 +276,39 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class ladegerList(APIView):
-    """
-    List all snippets, or create a new snippet.
-    """
-    authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (SessionAuthentication,)
+    # permission_classes = (IsAuthenticated,)
     serializer_class = ladegerSerializer
     def get(self, request, format=None):
         login_user=request.user
-        snippets = ladgernamedata.objects.filter(ledeger_user=login_user)
+        snippets = ladgernamedata.objects.all()
         serializer = ladegerSerializer(snippets, many=True)
         return Response(serializer.data)
 
 class CompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
     serializer_class = CompanySerializer
     def get(self, request, format=None):
         try:
             login_user=request.user
-            snippets = companydata.objects.filter(user_company=login_user)
+            # snippets = companydata.objects.filter(user_company=login_user)
+            snippets=companydata.objects.all()
             serializer = CompanySerializer(snippets, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+           return HttpResponse("something get worn please cntect admin")   
+
+class NormalCompanyList(APIView):
+    # authentication_classes = (SessionAuthentication,)
+    # permission_classes = (IsAuthenticated,)
+    serializer_class = NormalCompanySerializer
+    def get(self, request, format=None):
+        try:
+            login_user=request.user
+            # snippets = companydata.objects.filter(user_company=login_user)
+            snippets=companydata.objects.all()
+            serializer = NormalCompanySerializer(snippets, many=True)
             return Response(serializer.data)
         except Exception as e:
            return HttpResponse("something get worn please cntect admin")       
@@ -320,10 +332,9 @@ class UpdateCompany(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class UpdateLegder(APIView):
     # authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
     def get_object(self, pk):
         try:
             return ladgernamedata.objects.get(pk=pk)
