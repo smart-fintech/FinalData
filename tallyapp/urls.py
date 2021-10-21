@@ -7,6 +7,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 urlpatterns = [
     path('api/fetchladeger/', views.ladegerList.as_view()),
     path('getcompanynamedetails/', views.CompanyList.as_view()),
+    path('getcompanydetails/', views.NormalCompanyList.as_view()),
     path('UpdateCompany/<int:pk>/', views.UpdateCompany.as_view()),
     path('UpdateLegder/<int:pk>/', views.UpdateLegder.as_view()),
     path('getladeger', views.get_ledeger, name='getladeger'),
