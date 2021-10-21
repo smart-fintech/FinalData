@@ -13,6 +13,12 @@ class CompanySerializer(serializers.ModelSerializer):
         model = companydata
         fields = ['id','comp_name']  
 
+class NormalCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = companydata
+        fields = ['id','comp_name','comp_email', 'comp_phone', 'comp_address',
+        'comp_state','comp_website','comp_gstin','mac_ad','vat_no','cst_no','pan_no',]
+
 class UpdateCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = companydata
