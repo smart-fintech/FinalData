@@ -390,7 +390,7 @@ class EpaymentDataPost(generics.ListCreateAPIView):
         return Response(user_data,status=status.HTTP_201_CREATED)
 
 class NLPDataViews(generics.ListAPIView):
-    authentication_classes = (SessionAuthentication,)
+#     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     def get(self, request, *args, **kwargs):
         list=[]
@@ -413,7 +413,7 @@ class NLPDataViews(generics.ListAPIView):
         return Response(status=status.HTTP_200_OK)
 
 class POSTDataView(generics.ListCreateAPIView):
-    authentication_classes = (SessionAuthentication,)
+#     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class=ShowDataSerializer 
     def post(self, request, *args, **kwargs):
