@@ -205,4 +205,8 @@ class LogoutSerializer(serializers.Serializer):
 
         except TokenError:
             self.fail('bad_token')
- 
+ class Updateuserserializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['name', 'email', 'mobile',
+                  'type', 'is_delete', 'is_edit', 'is_views']
