@@ -514,7 +514,7 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
             queryset.save()
             d = datetime.datetime.strptime(str(queryset.Date), '%Y-%m-%d')
             newdate=datetime.date.strftime(d,"%Y%m%d")
-            url='http://192.168.29.187:9000'
+            url='http://192.168.29.187:9999'
             data='<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Import</TALLYREQUEST><TYPE>Data</TYPE>'
             data+='<ID>Vouchers</ID></HEADER><BODY><DESC><STATICVARIABLES><SVCURRENTCOMPANY>DDS LLP</SVCURRENTCOMPANY></STATICVARIABLES></DESC><DATA><TALLYMESSAGE>'
             data+='<VOUCHER><DATE>20200607</DATE><NARRATION>'+queryset.Transaction+'</NARRATION>'
