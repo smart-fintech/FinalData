@@ -22,6 +22,16 @@ class BankDataSerializer(serializers.ModelSerializer):
         # data['comp_name'] = instance.comp_name.comp_name
         data['bankname'] = instance.bankname.mstbnk_nm
         return data
+class ShowBankDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=BankDetails
+        # fields='__all__'
+        fields=['id','comp_name','finalbankname','ifsc_code','account_no']
+
+    def to_representation(self, instance):
+        data = super(ShowBankDataSerializer, self).to_representation(instance)
+        data['comp_name'] = instance.comp_name.comp_name
+        return data
 
 class EpaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,10 +46,6 @@ class EpaymentSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['bankname'].queryset = BankDetails.objects.all()
-    
-   
-
-
 
 class ShowDataSerializer(serializers.ModelSerializer):
     ListAmount1 = serializers.ListField(child = serializers.CharField(max_length=200,allow_null=True,default=None,required=False))
@@ -67,11 +73,19 @@ class EpaymentSerializer1(serializers.ModelSerializer):
         data = super(EpaymentSerializer1, self).to_representation(instance)
         data['bankname'] = instance.bankname.bankname.mstbnk_nm
         return data
-
 class LedgerDataSerializer(serializers.ModelSerializer):
     class Meta:
         model=ladgernamedata
-        fields='__all__'
+        fields=['id','ledeger_name']
 
+class UpdateBankDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=BankDetails
+        # fields='__all__'
+        fields=['id','comp_name','bankname','finalbankname','ifsc_code','account_no']
 
-
+    def to_representation(self, instance):
+        data = super(UpdateBankDataSerializer, self).to_representation(instance)
+        data['comp_name'] = instance.comp_name.comp_name
+        data['bankname'] = instance.bankname.mstbnk_nm
+        return data
