@@ -1,6 +1,7 @@
 
 from django.db.models import query
-from django.http import HttpResponse
+from django.http import HttpResponse,Http404
+from rest_framework import views
 from .models import EpaymentDetails, ShowData,LedgerData,BankDetails,masterBank
 import re
 import os.path
@@ -33,7 +34,18 @@ class BankDetailsViews1(APIView):
         print(queryset)
         serializer = EpaymentSerializer1(queryset, many=True)
         return Response(serializer.data)
-
+class BankDetailsViews2(APIView):
+    # authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    def get(self,request):
+        login_user=request.user
+        queryset2=companydata.objects.filter(user_company=login_user)
+        for i in queryset2:
+            queryset=BankDetails.objects.filter(comp_name=i)
+            print(queryset)
+        serializer = ShowBankDataSerializer(queryset, many=True)
+        return Response(serializer.data)
+    
 class MasterbankViews(generics.ListAPIView):
 
     # authentication_classes = (SessionAuthentication,)
@@ -57,8 +69,34 @@ class BankDetailsViews(generics.ListAPIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(finalbankname=serializer.data['bankname'])
+        serializer.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class UpdateBankdetails(APIView):
+    # authentication_classes = (SessionAuthentication,)
+    # permission_classes = (IsAuthenticated,)
+    def get_object(self, pk):
+        try:
+            return BankDetails.objects.get(pk=pk)
+        except BankDetails.DoesNotExist:
+            raise Http404
+    def get(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = UpdateBankDataSerializer(snippet)
+        return Response(serializer.data)
+    
+    def patch(self, request,pk, *args, **kwargs):
+        snippet = self.get_object(pk)
+        serializer = UpdateBankDataSerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class EpaymentDataPost(generics.ListCreateAPIView):
     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -703,9 +741,16 @@ class Newvoucherpost(generics.ListCreateAPIView):
                     # req = requests.post(url=url, data=data)
         return Response(status=status.HTTP_201_CREATED)
 
-class Legderlist(generics.ListCreateAPIView):
+
+class Legderlist(views.APIView):
+    # authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
     serializer_class=LedgerDataSerializer
-    queryset = ladgernamedata.objects.all()
+    def get(self, request, *args, **kwargs):
+        login_user=request.user
+        queryset = ladgernamedata.objects.filter(created_by=login_user)
+        serializer=LedgerDataSerializer(queryset,many=True)
+        return Response(serializer.data)
 
 class ModelFilter(django_filters.FilterSet):
     # authentication_classes = (SessionAuthentication,)
