@@ -8,10 +8,10 @@ LogoutSerializer,
 UserRegisterSerializer,
 UserLoginSerializer,
 admingetotheruserdataserializer,
-
+Updateuserserializer
 )
 from django.shortcuts import render,HttpResponse
-
+from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication,TokenAuthentication
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -193,8 +193,35 @@ class findadminuserdata(views.APIView):
     serializer_class = admingetotheruserdataserializer
     def get(self, request, format=None):
         try:
-            query=User.objects.all()
+            login_user=request.user
+            query=User.objects.filter(created_by=login_user)
             serializer = admingetotheruserdataserializer(query, many=True)
             return Response(serializer.data)
         except Exception as e:
            return HttpResponse("something get worn please cntect admin")    
+
+class UpdateUser(APIView):
+    # authentication_classes = (SessionAuthentication,)
+    # permission_classes = (IsAuthenticated,)
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+    def get(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = Updateuserserializer(snippet)
+        return Response(serializer.data)
+    
+    def patch(self, request,pk, *args, **kwargs):
+        snippet = self.get_object(pk)
+        serializer = Updateuserserializer(snippet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
