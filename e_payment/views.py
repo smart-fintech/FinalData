@@ -385,7 +385,7 @@ class EpaymentDataPost(generics.ListCreateAPIView):
             df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
             df['Bank']=user_data['bankname']
             df.to_csv('media/output.csv')
-            os.remove('media/prevois/new.csv')
+#             os.remove('media/prevois/new.csv')
             os.remove('media/new.csv')
         return Response(user_data,status=status.HTTP_201_CREATED)
 
