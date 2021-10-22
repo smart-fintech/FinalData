@@ -514,18 +514,18 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
             queryset.save()
             d = datetime.datetime.strptime(str(queryset.Date), '%Y-%m-%d')
             newdate=datetime.date.strftime(d,"%Y%m%d")
-            # url='http://192.168.29.141:9000'
-            # data='<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Import</TALLYREQUEST><TYPE>Data</TYPE>'
-            # data+='<ID>Vouchers</ID></HEADER><BODY><DESC><STATICVARIABLES><SVCURRENTCOMPANY>'+str(queryset.bank.bankname.companyname.comp_name)+'</SVCURRENTCOMPANY></STATICVARIABLES></DESC><DATA><TALLYMESSAGE>'
-            # data+='<VOUCHER><DATE>'+str(newdate)+'</DATE><NARRATION>'+queryset.Transaction+'</NARRATION>'
-            # data+='<VOUCHERTYPENAME>Payment</VOUCHERTYPENAME>'
-            # data+='<VOUCHERNUMBER>3</VOUCHERNUMBER><ALLLEDGERENTRIES.LIST>'
-            # data+='<LEDGERNAME>'+queryset.Legder+'</LEDGERNAME><ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>'
-            # data+='<AMOUNT>'+str(queryset.Debit)+'</AMOUNT></ALLLEDGERENTRIES.LIST>'
-            # data+='<ALLLEDGERENTRIES.LIST><LEDGERNAME>'+str(queryset.bank)+'</LEDGERNAME>'
-            # data+='<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE><AMOUNT>'+queryset.Credit+'</AMOUNT></ALLLEDGERENTRIES.LIST>'
-            # data+='</VOUCHER></TALLYMESSAGE></DATA></BODY></ENVELOPE>'
-            # req = requests.post(url=url, data=data)
+            url='http://192.168.29.187:9000'
+            data='<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Import</TALLYREQUEST><TYPE>Data</TYPE>'
+            data+='<ID>Vouchers</ID></HEADER><BODY><DESC><STATICVARIABLES><SVCURRENTCOMPANY>DDS LLP</SVCURRENTCOMPANY></STATICVARIABLES></DESC><DATA><TALLYMESSAGE>'
+            data+='<VOUCHER><DATE>20200607</DATE><NARRATION>'+queryset.Transaction+'</NARRATION>'
+            data+='<VOUCHERTYPENAME>Payment</VOUCHERTYPENAME>'
+            data+='<VOUCHERNUMBER>3</VOUCHERNUMBER><ALLLEDGERENTRIES.LIST>'
+            data+='<LEDGERNAME>'+queryset.Legder+'</LEDGERNAME><ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>'
+            data+='<AMOUNT>'+str(queryset.Debit)+'</AMOUNT></ALLLEDGERENTRIES.LIST>'
+            data+='<ALLLEDGERENTRIES.LIST><LEDGERNAME>'+str(queryset.bank)+'</LEDGERNAME>'
+            data+='<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE><AMOUNT>'+queryset.Credit+'</AMOUNT></ALLLEDGERENTRIES.LIST>'
+            data+='</VOUCHER></TALLYMESSAGE></DATA></BODY></ENVELOPE>'
+            req = requests.post(url=url, data=data)
             if queryset.EditLegder!='' and queryset.EditLegder2!='':
                 print('Done')
                 # url='http://192.168.29.141:9000'
