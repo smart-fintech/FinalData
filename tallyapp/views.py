@@ -277,7 +277,7 @@ from rest_framework.permissions import IsAuthenticated
 
 class ladegerList(APIView):
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = ladegerSerializer
     def get(self, request, format=None):
         login_user=request.user
@@ -287,7 +287,7 @@ class ladegerList(APIView):
 
 class CompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = CompanySerializer
     def get(self, request, format=None):
         try:
@@ -301,7 +301,7 @@ class CompanyList(APIView):
 
 class NormalCompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = NormalCompanySerializer
     def get(self, request, format=None):
         try:
@@ -332,9 +332,13 @@ class UpdateCompany(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status.HTTP_204_NO_CONTENT)
 class UpdateLegder(APIView):
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     def get_object(self, pk):
         try:
             return ladgernamedata.objects.get(pk=pk)
