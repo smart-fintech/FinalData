@@ -2,8 +2,6 @@ from os import name
 from django.urls import path
 from . import views
 
-
-
 urlpatterns = [
     path('bankstmnt/',views.EpaymentDataPost.as_view()),
     path('NLPDataViews/',views.NLPDataViews.as_view()),
@@ -15,7 +13,7 @@ urlpatterns = [
     path('ShowBankViews/',views.BankDetailsViews2.as_view()),
     path('BankStatementfilter/', views.BankStatementfilter.as_view(), name='BankStatementfilter'),
     path('Legderlist/',views.Legderlist.as_view()),
+    path('ShowLegderlist/',views.ShowLegderlist.as_view()),
     path('bankdata/',views.BankDetailsViews1.as_view()),
     path('newvoucher/',views.Newvoucherpost.as_view()),
-    # path('new123/',views.new123),
 ]
