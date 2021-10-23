@@ -8,7 +8,7 @@ import os.path
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 import pandas as pd
-from .serializers import EpaymentSerializer, LedgerDataSerializer,EpaymentSerializer1,ShowDataSerializer,BankDataSerializer,masterBankSerializer
+from .serializers import EpaymentSerializer,UpdateBankDataSerializer, LedgerDataSerializer1,LedgerDataSerializer,ShowBankDataSerializer,EpaymentSerializer1,ShowDataSerializer,BankDataSerializer,masterBankSerializer
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework import generics
@@ -39,10 +39,11 @@ class BankDetailsViews2(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self,request):
         login_user=request.user
-        queryset2=companydata.objects.filter(user_company=login_user)
-        for i in queryset2:
-            queryset=BankDetails.objects.filter(comp_name=i)
-            print(queryset)
+#         queryset2=companydata.objects.filter(user_company=login_user)
+#         for i in queryset2:
+#             queryset=BankDetails.objects.filter(comp_name=i)
+#             print(queryset)
+        queryset=BankDetails.objects.all()
         serializer = ShowBankDataSerializer(queryset, many=True)
         return Response(serializer.data)
     
@@ -68,7 +69,7 @@ class BankDetailsViews(generics.ListAPIView):
         return Response(serializer.data)
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid()
         serializer.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -750,6 +751,16 @@ class Legderlist(views.APIView):
         login_user=request.user
         queryset = ladgernamedata.objects.filter(created_by=login_user)
         serializer=LedgerDataSerializer(queryset,many=True)
+        return Response(serializer.data)
+
+class ShowLegderlist(views.APIView):
+    # authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class=LedgerDataSerializer1
+    def get(self, request, *args, **kwargs):
+        login_user=request.user
+        queryset = ladgernamedata.objects.all()
+        serializer=LedgerDataSerializer1(queryset,many=True)
         return Response(serializer.data)
 
 class ModelFilter(django_filters.FilterSet):
