@@ -12,12 +12,11 @@ class companydataSerializer(serializers.ModelSerializer):
     class Meta:
         model = companydata
         fields = '__all__'
-
 class Uploadcsvserializer1(serializers.ModelSerializer):
     class Meta:
         model=Uploadcsv
-        fields = ['Hsn_code','Description','CGst_rate','SGst_rate','IGst_rate','Per','Rate']
-        
+        fields = ['id','Hsn_code','Description','CGst_rate','SGst_rate','IGst_rate','Per','Rate']
+
 class Uploadcsvserializer(serializers.ModelSerializer):
     class Meta:
         model=Uploadcsv
