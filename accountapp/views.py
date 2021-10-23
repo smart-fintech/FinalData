@@ -8,7 +8,7 @@ LogoutSerializer,
 UserRegisterSerializer,
 UserLoginSerializer,
 admingetotheruserdataserializer,
-Updateuserserializer
+Updateuserserializer,
 )
 from django.shortcuts import render,HttpResponse
 from django.http import Http404
