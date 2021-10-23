@@ -1,10 +1,7 @@
-
 from rest_framework import serializers
-
 from tallyapp.models import ladgernamedata,companydata
+from tallyapp.serializers import *
 from .models import EpaymentDetails, ShowData,BankDetails,masterBank
-# from e_checkapp.models import PpOrgnM,PpBnkM
-
 
 class masterBankSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,23 +12,23 @@ class BankDataSerializer(serializers.ModelSerializer):
     class Meta:
         model=BankDetails
         # fields='__all__'
-        fields=['id','comp_name','bankname','finalbankname','ifsc_code','account_no']
+        fields=['id','comp_name','bankname','ifsc_code','account_no']
 
     def to_representation(self, instance):
         data = super(BankDataSerializer, self).to_representation(instance)
-        # data['comp_name'] = instance.comp_name.comp_name
         data['bankname'] = instance.bankname.mstbnk_nm
         return data
-class ShowBankDataSerializer(serializers.ModelSerializer):
+
+class ShowBankDataSerializer(serializers.ModelSerializer):   
     class Meta:
         model=BankDetails
         # fields='__all__'
-        fields=['id','comp_name','finalbankname','ifsc_code','account_no']
-
+        fields=['id','comp_name','bankname','ifsc_code','account_no']
     def to_representation(self, instance):
-        data = super(ShowBankDataSerializer, self).to_representation(instance)
-        data['comp_name'] = instance.comp_name.comp_name
-        return data
+        rep = super(ShowBankDataSerializer, self).to_representation(instance)
+        rep['comp_name'] = instance.comp_name.comp_name
+        rep['bankname'] = instance.bankname.mstbnk_nm
+        return rep
 
 class EpaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -73,16 +70,22 @@ class EpaymentSerializer1(serializers.ModelSerializer):
         data = super(EpaymentSerializer1, self).to_representation(instance)
         data['bankname'] = instance.bankname.bankname.mstbnk_nm
         return data
+
 class LedgerDataSerializer(serializers.ModelSerializer):
     class Meta:
         model=ladgernamedata
         fields=['id','ledeger_name']
+class LedgerDataSerializer1(serializers.ModelSerializer):
+    class Meta:
+        model=ladgernamedata
+        fields= ['id','ledeger_name','ledeger_email', 'ledeger_phone', 'ledeger_address',
+        'ledeger_state','ledeger_website','ledeger_gstin']
 
 class UpdateBankDataSerializer(serializers.ModelSerializer):
     class Meta:
         model=BankDetails
         # fields='__all__'
-        fields=['id','comp_name','bankname','finalbankname','ifsc_code','account_no']
+        fields=['id','comp_name','bankname','ifsc_code','account_no']
 
     def to_representation(self, instance):
         data = super(UpdateBankDataSerializer, self).to_representation(instance)
