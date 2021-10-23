@@ -94,14 +94,10 @@ class UserLoginSerializer(serializers.ModelSerializer):
         return super().validate(attrs)
 
 
-
-
 class admingetotheruserdataserializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
-
-
+        fields = ['id','name','mobile','email','type','is_views','is_edit','is_delete']
 
 
 # serializer for email varification
@@ -205,8 +201,9 @@ class LogoutSerializer(serializers.Serializer):
 
         except TokenError:
             self.fail('bad_token')
+
 class Updateuserserializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['name', 'email', 'mobile',
+        fields = ['id','name', 'email', 'mobile',
                   'type', 'is_delete', 'is_edit', 'is_views']
