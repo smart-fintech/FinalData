@@ -287,7 +287,7 @@ class ladegerList(APIView):
 
 class CompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated,)
+#     permission_classes = (IsAuthenticated,)
     serializer_class = CompanySerializer
     def get(self, request, format=None):
         try:
@@ -301,7 +301,7 @@ class CompanyList(APIView):
 
 class NormalCompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated,)
+#     permission_classes = (IsAuthenticated,)
     serializer_class = NormalCompanySerializer
     def get(self, request, format=None):
         try:
