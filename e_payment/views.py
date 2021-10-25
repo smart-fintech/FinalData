@@ -745,7 +745,7 @@ class Newvoucherpost(generics.ListCreateAPIView):
 
 class Legderlist(views.APIView):
     # authentication_classes = (SessionAuthentication,)
-    permission_classes = (IsAuthenticated,)
+#     permission_classes = (IsAuthenticated,)
     serializer_class=LedgerDataSerializer
     def get(self, request, *args, **kwargs):
         login_user=request.user
