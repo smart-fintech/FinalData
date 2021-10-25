@@ -749,7 +749,8 @@ class Legderlist(views.APIView):
     serializer_class=LedgerDataSerializer
     def get(self, request, *args, **kwargs):
         login_user=request.user
-        queryset = ladgernamedata.objects.filter(created_by=login_user)
+#         queryset = ladgernamedata.objects.filter(created_by=login_user)
+        queryset=ladgernamedata.objects.all()
         serializer=LedgerDataSerializer(queryset,many=True)
         return Response(serializer.data)
 
