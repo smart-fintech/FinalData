@@ -413,11 +413,14 @@ class NLPDataViews(generics.ListAPIView):
         os.remove('media/output.csv')
         return Response(status=status.HTTP_200_OK)
 
+
 class POSTDataView(generics.ListCreateAPIView):
-#     authentication_classes = (SessionAuthentication,)
+    # authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class=ShowDataSerializer 
     def post(self, request, *args, **kwargs):
+        x=ShowData.objects.last()
+        dates=x.created_on
         q=EpaymentDetails.objects.latest('id')
         queryset = ShowData.objects.filter(bank=q)
         with open('media/newoutput.csv', 'r') as f:
@@ -433,6 +436,7 @@ class POSTDataView(generics.ListCreateAPIView):
                         Credit=row.get('Debit',''),
                         Debit=row.get('Credit',''),
                         )
+                model.prevoius_created_on=dates
                 model.save()
                 model1=EpaymentDetails.objects.latest('id')
                 print('hhhhhhh',model1)
@@ -471,7 +475,6 @@ class POSTDataView(generics.ListCreateAPIView):
         queryset = ShowData.objects.filter(bank=q)
         serializer = ShowDataSerializer(queryset,many=True)
         return Response(serializer.data)
-
 class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
     # authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -782,3 +785,11 @@ class BankStatementfilter(generics.ListAPIView):
     filter_backends1 = (DjangoFilterBackend)
     filterset_fields = ['bankname','created_on']    
     filter_class = ModelFilter
+class Tallyaddbankvoucher(generics.ListAPIView):
+    # authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        q=ShowData.objects.last()
+        queryset = ShowData.objects.filter(created_on__gt=q.prevoius_created_on)
+        serializer = ShowDataSerializer(queryset,many=True)
+        return Response(serializer.data)
