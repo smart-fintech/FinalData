@@ -6,7 +6,7 @@ from .models import EpaymentDetails, ShowData,LedgerData,BankDetails,masterBank
 import re
 import os.path
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import SessionAuthentication,TokenAuthentication
 import pandas as pd
 from .serializers import EpaymentSerializer,UpdateBankDataSerializer, LedgerDataSerializer1,LedgerDataSerializer,ShowBankDataSerializer,EpaymentSerializer1,ShowDataSerializer,BankDataSerializer,masterBankSerializer
 from django.http import HttpResponse
