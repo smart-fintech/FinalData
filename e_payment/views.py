@@ -588,8 +588,8 @@ class BankStatementfilter(generics.ListAPIView):
     filterset_fields = ['bankname','created_on']    
     filter_class = ModelFilter
 class Tallyaddbankvoucher(generics.ListAPIView):
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+#     authentication_classes = (TokenAuthentication,)
+#     permission_classes = (IsAuthenticated,)
     def get(self, request):
         q=ShowData.objects.last()
         queryset = ShowData.objects.filter(created_on__gt=q.prevoius_created_on)
