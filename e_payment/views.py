@@ -554,8 +554,9 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
             queryset.Vouchetype=request.data['Vouchetype']
             queryset.Credit=request.data['Credit']
             queryset.Debit=request.data['Debit']
-            x=-(float(request.data['Debit']))
-            queryset.Debit=x
+#             x=-(float(request.data['Debit']))
+#             queryset.Debit=x
+            queryset.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request,pk):
