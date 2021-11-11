@@ -591,7 +591,7 @@ class Tallyaddbankvoucher(generics.ListAPIView):
     # authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     def get(self, request):
-        q=ShowData.objects.all()
-        # queryset = ShowData.objects.filter(created_on__gt=q.prevoius_created_on)
-        serializer = ShowDataSerializer1(q,many=True)
+        q=ShowData.objects.last()
+        queryset = ShowData.objects.filter(created_on__gt=q.prevoius_created_on)
+        serializer = ShowDataSerializer1(queryset,many=True)
         return Response(serializer.data)
