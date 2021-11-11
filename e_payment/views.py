@@ -28,7 +28,7 @@ import datetime,pathlib,pdfkit,tabula
 
 class BankDetailsViews1(APIView):
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     def get(self,request):
         queryset=EpaymentDetails.objects.all()
         print(queryset)
