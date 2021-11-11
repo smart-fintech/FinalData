@@ -92,3 +92,13 @@ class UpdateBankDataSerializer(serializers.ModelSerializer):
         data['comp_name'] = instance.comp_name.comp_name
         data['bankname'] = instance.bankname.mstbnk_nm
         return data
+class ShowDataSerializer1(serializers.ModelSerializer):
+
+    class Meta:
+        model=ShowData
+        fields='__all__'
+    
+    def to_representation(self, instance):
+        data = super(ShowDataSerializer1, self).to_representation(instance)
+        data['bank'] = instance.bank.bankname.bankname.mstbnk_nm
+        return data
