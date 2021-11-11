@@ -419,63 +419,102 @@ class POSTDataView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class=ShowDataSerializer 
     def post(self, request, *args, **kwargs):
-        x=ShowData.objects.last()
-        dates=x.created_on
-        q=EpaymentDetails.objects.latest('id')
-        queryset = ShowData.objects.filter(bank=q)
-        with open('media/newoutput.csv', 'r') as f:
-            csv_reader = csv.DictReader(f)
-            for row in csv_reader:
-                row['Credit'] = row['Credit'].replace(',', '')
-                row['Debit'] = row['Debit'].replace(',', '')
-                model=ShowData.objects.create(
-                        Date=row.get('Date',''),
-                        Transaction=row.get('Narration',''),
-                        Legder=row.get('Matched',''),
-                        Ref_no=row.get('Ref.No',''),
-                        Credit=row.get('Debit',''),
-                        Debit=row.get('Credit',''),
-                        )
-                model.prevoius_created_on=dates
-                model.save()
-                model1=EpaymentDetails.objects.latest('id')
-                print('hhhhhhh',model1)
-                model.bank=model1
-                model.save()
-            list=[]
-            for i in queryset.all():
-                list.append(str(i.Date))
-            c=len(list)
-            model2=EpaymentDetails.objects.filter(id=model1.id).update(s_date=list[0],e_date=list[-1],entry=c)
-            print(model1.s_date)
-            print(model2)
-        x=str(q.file)
-        file_extension = pathlib.Path(x).suffix
-        print(file_extension)
-        if file_extension=='.csv':
-            headers=['Date','Narration','Debit','Credit','Balance']
-            csv1 = pd.read_csv('media/newoutput.csv',usecols=headers)
-            df = csv1.fillna("")
-            df['Date'] = pd.to_datetime(df['Date'], dayfirst=True).dt.strftime('%d/%m/%Y')
-            renamedata='CSVTOPDFDATA'+str(q.id)+'.pdf'
+        try:  
+            x=ShowData.objects.latest('id')
+            dates=x.created_on
+            q=EpaymentDetails.objects.latest('id')
+            queryset = ShowData.objects.filter(bank=q)
+            with open('media/newoutput.csv', 'r') as f:
+                csv_reader = csv.DictReader(f)
+                for row in csv_reader:
+                    row['Credit'] = row['Credit'].replace(',', '')
+                    row['Debit'] = row['Debit'].replace(',', '')
+                    model=ShowData.objects.create(
+                            Date=row.get('Date',''),
+                            Transaction=row.get('Narration',''),
+                            Legder=row.get('Matched',''),
+                            Ref_no=row.get('Ref.No',''),
+                            Credit=row.get('Debit',''),
+                            Debit=row.get('Credit',''),
+                            )
+                    model.prevoius_created_on=dates
+                    model.save()
+                    model1=EpaymentDetails.objects.latest('id')
+                    print('hhhhhhh',model1)
+                    model.bank=model1
+                    model.save()
+                list=[]
+                for i in queryset.all():
+                    list.append(str(i.Date))
+                c=len(list)
+                model2=EpaymentDetails.objects.filter(id=model1.id).update(s_date=list[0],e_date=list[-1],entry=c)
+                print(model1.s_date)
+                print(model2)
+            x=str(q.file)
+            file_extension = pathlib.Path(x).suffix
+            print(file_extension)
+            if file_extension=='.csv':
+                headers=['Date','Narration','Debit','Credit','Balance']
+                csv1 = pd.read_csv('media/newoutput.csv',usecols=headers)
+                df = csv1.fillna("")
+                df['Date'] = pd.to_datetime(df['Date'], dayfirst=True).dt.strftime('%d/%m/%Y')
+                renamedata='CSVTOPDFDATA'+str(q.id)+'.pdf'
 
-            df.to_html("media/demohtml/table.html")
-            dest='media/pdf/'+renamedata
-            print(dest)
-            options = {'page-size': 'A4','margin-top': '0.75in','margin-right': '0.75in','margin-bottom': '0.75in','margin-left': '0.75in'}
-            pdfkit.from_file("media/demohtml/table.html",dest,options=options)
-            model2=EpaymentDetails.objects.filter(id=model1.id).update(file='pdf/'+renamedata)
-        else:
-            pass
-        os.remove('media/newoutput.csv')
-        return Response(status=status.HTTP_201_CREATED)
-    
-    def get(self, request):
-        q=EpaymentDetails.objects.latest('id')
-        queryset = ShowData.objects.filter(bank=q)
-        serializer = ShowDataSerializer(queryset,many=True)
-        return Response(serializer.data)
-class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
+                df.to_html("media/demohtml/table.html")
+                dest='media/pdf/'+renamedata
+                print(dest)
+                options = {'page-size': 'A4','margin-top': '0.75in','margin-right': '0.75in','margin-bottom': '0.75in','margin-left': '0.75in'}
+                pdfkit.from_file("media/demohtml/table.html",dest,options=options)
+                model2=EpaymentDetails.objects.filter(id=model1.id).update(file='pdf/'+renamedata)
+            else:
+                pass
+            os.remove('media/newoutput.csv')
+        except ShowData.DoesNotExist:
+            q=EpaymentDetails.objects.latest('id')
+            queryset = ShowData.objects.filter(bank=q)
+            with open('media/newoutput.csv', 'r') as f:
+                csv_reader = csv.DictReader(f)
+                for row in csv_reader:
+                    row['Credit'] = row['Credit'].replace(',', '')
+                    row['Debit'] = row['Debit'].replace(',', '')
+                    model=ShowData.objects.create(
+                            Date=row.get('Date',''),
+                            Transaction=row.get('Narration',''),
+                            Legder=row.get('Matched',''),
+                            Ref_no=row.get('Ref.No',''),
+                            Credit=row.get('Debit',''),
+                            Debit=row.get('Credit',''),
+                            )
+                    model.prevoius_created_on=model.created_on
+                    model.save()
+                    model1=EpaymentDetails.objects.latest('id')
+                    print('hhhhhhh',model1)
+                    model.bank=model1
+                    model.save()
+                list=[]
+                for i in queryset.all():
+                    list.append(str(i.Date))
+                c=len(list)
+                model2=EpaymentDetails.objects.filter(id=model1.id).update(s_date=list[0],e_date=list[-1],entry=c)
+                print(model1.s_date)
+                print(model2)
+            x=str(q.file)
+            file_extension = pathlib.Path(x).suffix
+            print(file_extension)
+            if file_extension=='.csv':
+                headers=['Date','Narration','Debit','Credit','Balance']
+                csv1 = pd.read_csv('media/newoutput.csv',usecols=headers)
+                df = csv1.fillna("")
+                df['Date'] = pd.to_datetime(df['Date'], dayfirst=True).dt.strftime('%d/%m/%Y')
+                renamedata='CSVTOPDFDATA'+str(q.id)+'.pdf'
+
+                df.to_html("media/demohtml/table.html")
+                dest='media/pdf/'+renamedata
+                print(dest)
+                options = {'page-size': 'A4','margin-top': '0.75in','margin-right': '0.75in','margin-bottom': '0.75in','margin-left': '0.75in'}
+                pdfkit.from_file("media/demohtml/table.html",dest,options=options)
+                model2=EpaymentDetails.objects.filter(id=model1.id).update(file='pdf/'+renamedata)
+        return Response(status=status.HTTP_201_CREATED)class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
     # authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class=ShowDataSerializer
