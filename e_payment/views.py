@@ -542,22 +542,19 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
         queryset = self.get_object(pk)
         serializer=self.serializer_class(data=request.data,many=True)
         if serializer.is_valid():
-            print('data')
-            queryset.Legder=request.data['Legder']
-            queryset.ListAmount1=request.data['ListAmount1']
-            queryset.ListLegder1=request.data['ListLegder1']
-            queryset.ListAmount2=request.data['ListAmount2']
-            queryset.ListLegder2=request.data['ListLegder2']
-            queryset.EditLegder=request.data['EditLegder']
-            queryset.EditLegder2=request.data['EditLegder2']
-            queryset.EditLegderamount=request.data['EditLegderamount']
-            queryset.EditLegder2amount=request.data['EditLegder2amount']
-            queryset.Vouchetype=request.data['Vouchetype']
-            queryset.Credit=request.data['Credit']
-            queryset.Debit=request.data['Debit']
-#             x=-(float(request.data['Debit']))
-#             queryset.Debit=x
-            queryset.save()
+#             queryset.Legder=request.data['Legder']
+#             queryset.ListAmount1=request.data['ListAmount1']
+#             queryset.ListLegder1=request.data['ListLegder1']
+#             queryset.ListAmount2=request.data['ListAmount2']
+#             queryset.ListLegder2=request.data['ListLegder2']
+#             queryset.EditLegder=request.data['EditLegder']
+#             queryset.EditLegder2=request.data['EditLegder2']
+#             queryset.EditLegderamount=request.data['EditLegderamount']
+#             queryset.EditLegder2amount=request.data['EditLegder2amount']
+#             queryset.Vouchetype=request.data['Vouchetype']
+#             queryset.Credit=request.data['Credit']
+#             queryset.Debit=request.data['Debit']
+            serializer.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request,pk):
