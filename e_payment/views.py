@@ -514,7 +514,15 @@ class POSTDataView(generics.ListCreateAPIView):
                 options = {'page-size': 'A4','margin-top': '0.75in','margin-right': '0.75in','margin-bottom': '0.75in','margin-left': '0.75in'}
                 pdfkit.from_file("media/demohtml/table.html",dest,options=options)
                 model2=EpaymentDetails.objects.filter(id=model1.id).update(file='pdf/'+renamedata)
+                else:
+                    pass
+            os.remove('media/newoutput.csv')
         return Response(status=status.HTTP_201_CREATED)
+    def get(self, request):
+        q=EpaymentDetails.objects.latest('id')
+        queryset = ShowData.objects.filter(bank=q)
+        serializer = ShowDataSerializer(queryset,many=True)
+        return Response(serializer.data)
 class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
     # authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
