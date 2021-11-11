@@ -590,9 +590,8 @@ class BankStatementfilter(generics.ListAPIView):
 class Tallyaddbankvoucher(generics.ListAPIView):
 #     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
-    serializer_class=ShowDataSerializer
     def get(self, request, *args, **kwargs):
-        q=ShowData.objects.last()
-        queryset = ShowData.objects.filter(created_on__gt=q.prevoius_created_on)
-        serializer = ShowDataSerializer(queryset,many=True)
+        q=ShowData.objects.all()
+#         queryset = ShowData.objects.filter(created_on__gt=q.prevoius_created_on)
+        serializer = ShowDataSerializer(q,many=True)
         return Response(serializer.data)
