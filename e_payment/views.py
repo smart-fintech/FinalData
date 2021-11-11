@@ -50,7 +50,7 @@ class BankDetailsViews2(APIView):
 class MasterbankViews(generics.ListAPIView):
 
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset=masterBank.objects.all()
     serializer_class=masterBankSerializer
     def get(self,request):
@@ -60,7 +60,7 @@ class MasterbankViews(generics.ListAPIView):
 
 class BankDetailsViews(generics.ListAPIView):
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset=BankDetails.objects.all()
     serializer_class=BankDataSerializer
     def get(self,request):
@@ -75,7 +75,7 @@ class BankDetailsViews(generics.ListAPIView):
 
 class UpdateBankdetails(APIView):
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     def get_object(self, pk):
         try:
             return BankDetails.objects.get(pk=pk)
@@ -99,7 +99,7 @@ class UpdateBankdetails(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class EpaymentDataPost(generics.ListCreateAPIView):
-    authentication_classes = (SessionAuthentication,)
+#     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     queryset=EpaymentDetails.objects.all()
     serializer_class=EpaymentSerializer
@@ -515,7 +515,7 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
         queryset.delete()
         return Response(status=status.HTTP_200_OK)
 class Newvoucherpost(generics.ListCreateAPIView):
-    authentication_classes = (SessionAuthentication,)
+#     authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class=ShowDataSerializer 
     def post(self, request, *args, **kwargs):
@@ -550,7 +550,7 @@ class Newvoucherpost(generics.ListCreateAPIView):
 
 class Legderlist(views.APIView):
     # authentication_classes = (SessionAuthentication,)
-#     permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class=LedgerDataSerializer
     def get(self, request, *args, **kwargs):
         login_user=request.user
