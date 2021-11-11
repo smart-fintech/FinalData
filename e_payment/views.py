@@ -8,7 +8,7 @@ import os.path
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication,TokenAuthentication
 import pandas as pd
-from .serializers import EpaymentSerializer,UpdateBankDataSerializer, LedgerDataSerializer1,LedgerDataSerializer,ShowBankDataSerializer,EpaymentSerializer1,ShowDataSerializer,BankDataSerializer,masterBankSerializer
+from .serializers import EpaymentSerializer,UpdateBankDataSerializer, LedgerDataSerializer1,LedgerDataSerializer,ShowDataSerializer1,ShowBankDataSerializer,EpaymentSerializer1,ShowDataSerializer,BankDataSerializer,masterBankSerializer
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework import generics
@@ -588,10 +588,10 @@ class BankStatementfilter(generics.ListAPIView):
     filterset_fields = ['bankname','created_on']    
     filter_class = ModelFilter
 class Tallyaddbankvoucher(generics.ListAPIView):
-#     authentication_classes = (SessionAuthentication,)
+    # authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         q=ShowData.objects.all()
-#         queryset = ShowData.objects.filter(created_on__gt=q.prevoius_created_on)
-        serializer = ShowDataSerializer(q,many=True)
+        # queryset = ShowData.objects.filter(created_on__gt=q.prevoius_created_on)
+        serializer = ShowDataSerializer1(q,many=True)
         return Response(serializer.data)
