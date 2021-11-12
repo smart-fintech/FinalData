@@ -62,10 +62,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',    #cross sitemiddleware
-    'django.middleware.common.BrokenLinkEmailsMiddleware', #cross sitemiddlwware
-    'django.middleware.common.CommonMiddleware',# crosssite middleware
-
+    # cors middleware
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -110,7 +110,7 @@ DATABASES = {
 }
 CORS_ALLOW_CREDENTIALS=True
 # CORS_ORIGIN_ALLOW_ALL=True
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://api.digitaldocsys.in", "http://api.digitaldocsys.in"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:8080", "https://api.digitaldocsys.in", "http://api.digitaldocsys.in"]
 #CORS_ORIGIN_WHITELIST = ('http://localhost:3000')
 ALLOWED_HOSTS= ['*','0.0.0.0']
 CORS_ALLOW_METHODS = [
