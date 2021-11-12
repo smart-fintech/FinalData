@@ -29,7 +29,7 @@ SECRET_KEY = '=^dz+bda_coz4b13m27a@l2p0(k*b5u_gm22cpy-7k30y0zupe'
 DEBUG = False
 
 # ALLOWED_HOSTS = ['*','0.0.0.0']
-ALLOWED_HOSTS=['*']
+#ALLOWED_HOSTS=['*']
 AUTH_USER_MODEL='accountapp.User'
 
 
@@ -110,9 +110,9 @@ DATABASES = {
 }
 CORS_ALLOW_CREDENTIALS=True
 # CORS_ORIGIN_ALLOW_ALL=True
-# CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
-CORS_ORIGIN_WHITELIST = ('http://localhost:3000',)
-ALLOWED_HOSTS=['*']
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://api.digitaldocsys.in", "http://api.digitaldocsys.in"]
+#CORS_ORIGIN_WHITELIST = ('http://localhost:3000')
+ALLOWED_HOSTS= ['*','0.0.0.0']
 CORS_ALLOW_METHODS = [
 'DELETE',
 'GET',
