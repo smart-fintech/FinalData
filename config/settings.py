@@ -113,7 +113,7 @@ CORS_ALLOW_CREDENTIALS=True
 #CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:8080", "https://api.digitaldocsys.in", "http://api.digitaldocsys.in"]
 #CORS_ORIGIN_WHITELIST = ('http://localhost:3000')
 ALLOWED_HOSTS= ['*','0.0.0.0']
-#CORS_ALLOW_METHODS = [
+'''CORS_ALLOW_METHODS = [
 'DELETE',
 'GET',
 'OPTIONS',
@@ -121,7 +121,7 @@ ALLOWED_HOSTS= ['*','0.0.0.0']
 'POST',
 'PUT',
 ]
-#CORS_ALLOW_HEADERS = [
+CORS_ALLOW_HEADERS = [
 'accept',
 'accept-encoding',
 'authorization',
@@ -131,7 +131,7 @@ ALLOWED_HOSTS= ['*','0.0.0.0']
 'user-agent',
 'x-csrftoken',
 'x-requested-with',
-]
+]'''
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
