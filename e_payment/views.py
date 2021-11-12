@@ -562,7 +562,7 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
         queryset.delete()
         return Response(status=status.HTTP_200_OK)
 class Newvoucherpost(generics.ListCreateAPIView):
-#     authentication_classes = (SessionAuthentication,)
+    # authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
     serializer_class=ShowDataSerializer 
     def post(self, request, *args, **kwargs):
@@ -580,17 +580,11 @@ class Newvoucherpost(generics.ListCreateAPIView):
                 ListLegder2=request.POST.get('ListLegder2',''),
                 ListAmount2=request.POST.get('ListAmount2',''),
                 Vouchetype=request.POST.get('Vouchetype',''),
-                Vouchenumber=request.POST.get('Vouchenumber',''),
                 AccountantNarration=request.POST.get('AccountantNarration',''),
                 )
         model.save()
         model1=EpaymentDetails.objects.latest('id')
         model.bank=model1
-        model.save()
-        d = datetime.datetime.strptime(str(model.Date), '%Y-%m-%d')
-        newdate=datetime.date.strftime(d,"%Y%m%d")
-        y=-(float(model.Debit))
-        model.Debit=y
         model.save()
         return Response(status=status.HTTP_201_CREATED)
 
