@@ -63,8 +63,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     # cors middleware
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    #'corsheaders.middleware.CorsMiddleware',
+    #'django.middleware.common.CommonMiddleware',
     
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -110,10 +110,10 @@ DATABASES = {
 }
 CORS_ALLOW_CREDENTIALS=True
 # CORS_ORIGIN_ALLOW_ALL=True
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:8080", "https://api.digitaldocsys.in", "http://api.digitaldocsys.in"]
+#CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost:8080", "https://api.digitaldocsys.in", "http://api.digitaldocsys.in"]
 #CORS_ORIGIN_WHITELIST = ('http://localhost:3000')
 ALLOWED_HOSTS= ['*','0.0.0.0']
-CORS_ALLOW_METHODS = [
+#CORS_ALLOW_METHODS = [
 'DELETE',
 'GET',
 'OPTIONS',
@@ -121,7 +121,7 @@ CORS_ALLOW_METHODS = [
 'POST',
 'PUT',
 ]
-CORS_ALLOW_HEADERS = [
+#CORS_ALLOW_HEADERS = [
 'accept',
 'accept-encoding',
 'authorization',
