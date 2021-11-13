@@ -468,7 +468,7 @@ class POSTDataView(generics.ListCreateAPIView):
                 model2=EpaymentDetails.objects.filter(id=model1.id).update(file='pdf/'+renamedata)
             else:
                 pass
-            os.remove('media/newoutput.csv')
+#             os.remove('media/newoutput.csv')
         except ShowData.DoesNotExist:
             q=EpaymentDetails.objects.latest('id')
             queryset = ShowData.objects.filter(bank=q)
@@ -516,7 +516,7 @@ class POSTDataView(generics.ListCreateAPIView):
                 model2=EpaymentDetails.objects.filter(id=model1.id).update(file='pdf/'+renamedata)
             else:
                 pass
-            os.remove('media/newoutput.csv')
+#             os.remove('media/newoutput.csv')
         return Response(status=status.HTTP_201_CREATED)
     def get(self, request):
         q=EpaymentDetails.objects.latest('id')
