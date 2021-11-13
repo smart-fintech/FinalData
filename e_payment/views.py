@@ -395,7 +395,7 @@ class NLPDataViews(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request, *args, **kwargs):
         list=[]
-        qdata=LedgerData.objects.all()
+        qdata=ladgernamedata.objects.all()
         for q in qdata:
             list.append(str(q))
         df=pd.read_csv('media/output.csv')
