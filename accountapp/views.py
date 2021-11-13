@@ -56,7 +56,6 @@ class CustomRedirect(HttpResponsePermanentRedirect):
 # for register new user
 # loging api
 class RegisterView(generics.GenericAPIView):
-    authentication_classes = (TokenAuthentication,)
     serializer_class = RegisterSerializer
 
     def post(self,request):   
@@ -187,9 +186,7 @@ class LogoutAPIView(generics.GenericAPIView):
 
 
 class findadminuserdata(views.APIView):
-    # authentication_classes = (TokenAuthentication,)
-    authentication_classes = (SessionAuthentication,)
-    # permission_classes = (AccessPermission,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = admingetotheruserdataserializer
     def get(self, request, format=None):
         try:
@@ -202,7 +199,7 @@ class findadminuserdata(views.APIView):
 
 class UpdateUser(APIView):
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     def get_object(self, pk):
         try:
             return User.objects.get(pk=pk)
