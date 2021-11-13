@@ -83,20 +83,16 @@ class RegisterView(generics.GenericAPIView):
         #    return HttpResponse("something get worn please cntect admin")
 
 class UserRegisterView(generics.GenericAPIView):
-    authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)   
+    permission_classes = (IsAuthenticated,)   
     serializer_class = UserRegisterSerializer
-    # renderer_classes = (UserRenderer,)
     def post(self, request):
         loginuser=request.user
         email = request.data
         print("HHHHHHHHHHHHHHHHHHh", loginuser)
         serializer = self.serializer_class(data=email)
-
         serializer.is_valid(raise_exception=True)
         serializer.save(created_by=loginuser,is_staff=False)
         user_data = serializer.data
-        # print(user_data)
         user = User.objects.get(email=user_data['email'])
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
