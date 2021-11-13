@@ -72,6 +72,7 @@ class ShowData(models.Model):
     is_verified=models.BooleanField(null=True,blank=True,default=False)
     created_on=models.DateTimeField(auto_now_add=True,null=True,blank=True)
     prevoius_created_on=models.DateTimeField(null=True,blank=True)
+    prevoius_zero_cr_dr=models.CharField(max_length=200,null=True,blank=True)
 
     def __str__(self):
         return str(self.Transaction)

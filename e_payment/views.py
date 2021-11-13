@@ -443,16 +443,20 @@ class POSTDataView(generics.ListCreateAPIView):
                     print('hhhhhhh',model1)
                     model.bank=model1
                     model.save()
+                    if model.Credit=='0.0':
+                        model.prevoius_zero_cr_dr='Credit'
+                        model.save()
+                    else:
+                        model.prevoius_zero_cr_dr='Debit'
+                        model.save()
                 list=[]
                 for i in queryset.all():
                     list.append(str(i.Date))
                 c=len(list)
                 model2=EpaymentDetails.objects.filter(id=model1.id).update(s_date=list[0],e_date=list[-1],entry=c)
-                print(model1.s_date)
-                print(model2)
+            
             x=str(q.file)
             file_extension = pathlib.Path(x).suffix
-            print(file_extension)
             if file_extension=='.csv':
                 headers=['Date','Narration','Debit','Credit','Balance']
                 csv1 = pd.read_csv('media/newoutput.csv',usecols=headers)

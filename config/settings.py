@@ -31,7 +31,7 @@ DEBUG = False
 # ALLOWED_HOSTS = ['*','0.0.0.0']
 #ALLOWED_HOSTS=['*']
 AUTH_USER_MODEL='accountapp.User'
-
+DEFAULT_AUTO_FIELD='django.db.models.AutoField' 
 
 # Application definition
 
