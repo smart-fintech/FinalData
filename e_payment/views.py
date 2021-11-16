@@ -546,6 +546,7 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
         queryset = self.get_object(pk)
         serializer=self.serializer_class(data=request.data,many=True)
         if serializer.is_valid():
+            queryset.AccountantNarration=request.data['AccountantNarration']
             queryset.Legder=request.data['Legder']
             queryset.ListAmount1=request.data['ListAmount1']
             queryset.ListLegder1=request.data['ListLegder1']
@@ -558,6 +559,8 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
             queryset.Vouchetype=request.data['Vouchetype']
             queryset.Credit=request.data['Credit']
             queryset.Debit=request.data['Debit']
+            x=request.data['Debit']
+            queryset.Debit=-float(x)
             queryset.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
