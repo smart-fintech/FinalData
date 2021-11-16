@@ -561,6 +561,7 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
             queryset.Debit=request.data['Debit']
             x=request.data['Debit']
             queryset.Debit=-float(x)
+            queryset.is_verified='Yes'
             queryset.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
