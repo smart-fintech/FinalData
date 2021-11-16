@@ -7,11 +7,16 @@ class ladegerSerializer(serializers.ModelSerializer):
         model = ladgernamedata
         fields = ['id', 'name']
 
+class PostladegerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ladgernamedata
+        fields = ['ledeger_name']
+
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = companydata
-        fields = ['id','comp_name']  
+        fields = ['id','comp_name','comp_id']   
 
 class NormalCompanySerializer(serializers.ModelSerializer):
     class Meta:
