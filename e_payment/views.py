@@ -574,6 +574,7 @@ class Newvoucherpost(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class=ShowDataSerializer 
     def post(self, request, *args, **kwargs):
+        mod=ShowData.objects.latest('id')
         q=EpaymentDetails.objects.latest('id')
         model=ShowData.objects.create(
                 Date=request.POST.get('Date',''),
@@ -589,14 +590,16 @@ class Newvoucherpost(generics.ListCreateAPIView):
                 ListAmount2=request.POST.get('ListAmount2',''),
                 Vouchetype=request.POST.get('Vouchetype',''),
                 AccountantNarration=request.POST.get('AccountantNarration',''),
+                EditLegderamount=request.POST.get('EditLegderamount',0.00),
+                EditLegder2amount=request.POST.get('EditLegder2amount',0.00),
                 )
         model.is_verified='True'
+        model.prevoius_created_on=mod.prevoius_created_on
         model.save()
         model1=EpaymentDetails.objects.latest('id')
         model.bank=model1
         model.save()
         return Response(status=status.HTTP_201_CREATED)
-
 
 class Legderlist(views.APIView):
     # authentication_classes = (SessionAuthentication,)
