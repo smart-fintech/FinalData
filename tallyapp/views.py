@@ -266,7 +266,7 @@ def creategrup(request):
 
 ############################# django restframework start here  #################################
 from tallyapp.models import ladgernamedata
-from tallyapp.serializers import UpdateCompanySerializer, ladegerSerializer,CompanySerializer,UpdateLegderSerializer,NormalCompanySerializer
+from tallyapp.serializers import UpdateCompanySerializer, ladegerSerializer,CompanySerializer,UpdateLegderSerializer,NormalCompanySerializer,PostladegerSerializer
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -284,7 +284,21 @@ class ladegerList(APIView):
         snippets = ladgernamedata.objects.all()
         serializer = ladegerSerializer(snippets, many=True)
         return Response(serializer.data)
-
+class LegderPost(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = PostladegerSerializer
+    def get(self, request, format=None):
+        snippets = ladgernamedata.objects.all()
+        print(snippets)
+        serializer = PostladegerSerializer(snippets, many=True)
+        print(serializer)
+        return Response(serializer.data)
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid()
+        serializer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 class CompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
 #     permission_classes = (IsAuthenticated,)
@@ -297,7 +311,12 @@ class CompanyList(APIView):
             serializer = CompanySerializer(snippets, many=True)
             return Response(serializer.data)
         except Exception as e:
-           return HttpResponse("something get worn please cntect admin")   
+           return HttpResponse("something get worn please cntect admin")
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid()
+        serializer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT) 
 
 class NormalCompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
