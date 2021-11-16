@@ -561,7 +561,7 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
             queryset.Debit=request.data['Debit']
             x=request.data['Debit']
             queryset.Debit=-float(x)
-            queryset.is_verified='Yes'
+            queryset.is_verified='True'
             queryset.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -590,6 +590,7 @@ class Newvoucherpost(generics.ListCreateAPIView):
                 Vouchetype=request.POST.get('Vouchetype',''),
                 AccountantNarration=request.POST.get('AccountantNarration',''),
                 )
+        model.is_verified='True'
         model.save()
         model1=EpaymentDetails.objects.latest('id')
         model.bank=model1
