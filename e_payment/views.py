@@ -569,6 +569,7 @@ class UpdateDeleteData(generics.RetrieveUpdateDestroyAPIView):
         queryset = self.get_object(pk)
         queryset.delete()
         return Response(status=status.HTTP_200_OK)
+    
 class Newvoucherpost(generics.ListCreateAPIView):
     # authentication_classes = (SessionAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -577,28 +578,30 @@ class Newvoucherpost(generics.ListCreateAPIView):
         mod=ShowData.objects.latest('id')
         q=EpaymentDetails.objects.latest('id')
         model=ShowData.objects.create(
-                Date=request.POST.get('Date',''),
-                Transaction=request.POST.get('Transaction',''),
-                Legder=request.POST.get('Legder',''),
-                Credit=request.POST.get('Credit',''),
-                Debit=request.POST.get('Debit',''),
-                EditLegder=request.POST.get('EditLegder',''),
-                EditLegder2=request.POST.get('EditLegder2',''),
-                ListLegder1=request.POST.get('ListLegder1',''),
-                ListAmount1=request.POST.get('ListAmount1',''),
-                ListLegder2=request.POST.get('ListLegder2',''),
-                ListAmount2=request.POST.get('ListAmount2',''),
-                Vouchetype=request.POST.get('Vouchetype',''),
-                AccountantNarration=request.POST.get('AccountantNarration',''),
-                EditLegderamount=request.POST.get('EditLegderamount',''),
-                EditLegder2amount=request.POST.get('EditLegder2amount',''),
+                Date=request.POST['Date'],
+                Transaction=request.POST['Transaction'],
+                Legder=request.POST['Legder'],
+                Credit=request.POST['Credit'],
+                # Debit=request.POST['Debit'],
+                EditLegder=request.POST['EditLegder'],
+                EditLegder2=request.POST['EditLegder2'],
+                ListLegder1=request.POST['ListLegder1'],
+                ListAmount1=request.POST['ListAmount1'],
+                ListLegder2=request.POST['ListLegder2'],
+                ListAmount2=request.POST['ListAmount2'],
+                Vouchetype=request.POST['Vouchetype'],
+                AccountantNarration=request.POST['AccountantNarration'],
+                EditLegderamount=request.POST['EditLegderamount'],
+                EditLegder2amount=request.POST['EditLegder2amount'],
                 )
         model.is_verified='True'
         model.prevoius_created_on=mod.prevoius_created_on
+        model.Debit='-'+request.data['Debit']
         model.save()
         model1=EpaymentDetails.objects.latest('id')
         model.bank=model1
         model.save()
+        print(model.EditLegderamount,model.EditLegder2amount)
         return Response(status=status.HTTP_201_CREATED)
 
 class Legderlist(views.APIView):
