@@ -590,8 +590,8 @@ class Newvoucherpost(generics.ListCreateAPIView):
                 ListAmount2=request.POST.get('ListAmount2',''),
                 Vouchetype=request.POST.get('Vouchetype',''),
                 AccountantNarration=request.POST.get('AccountantNarration',''),
-                EditLegderamount=request.POST.get('EditLegderamount',0.00),
-                EditLegder2amount=request.POST.get('EditLegder2amount',0.00),
+                EditLegderamount=request.POST.get('EditLegderamount',''),
+                EditLegder2amount=request.POST.get('EditLegder2amount',''),
                 )
         model.is_verified='True'
         model.prevoius_created_on=mod.prevoius_created_on
