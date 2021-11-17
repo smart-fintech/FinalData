@@ -283,8 +283,7 @@ class ladegerList(APIView):
         login_user=request.user
         snippets = ladgernamedata.objects.all()
         serializer = ladegerSerializer(snippets, many=True)
-        return Response(serializer.data)
-class LegderPost(APIView):
+        return Response(serializer.data)class LegderPost(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = PostladegerSerializer
     def get(self, request, format=None):
@@ -294,11 +293,12 @@ class LegderPost(APIView):
         print(serializer)
         return Response(serializer.data)
     def post(self, request):
+        login_user=request.user
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid()
-        serializer.save()
+        serializer.save(created_by=login_user)
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
 class CompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
 #     permission_classes = (IsAuthenticated,)
@@ -311,12 +311,13 @@ class CompanyList(APIView):
             serializer = CompanySerializer(snippets, many=True)
             return Response(serializer.data)
         except Exception as e:
-           return HttpResponse("something get worn please cntect admin")
+           return HttpResponse("something get worn please cntect admin") 
     def post(self, request):
+        login_user=request.user
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid()
-        serializer.save()
-        return Response(status=status.HTTP_204_NO_CONTENT) 
+        serializer.save(user_company=login_user)
+        return Response(status=status.HTTP_204_NO_CONTENT)  
 
 class NormalCompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
