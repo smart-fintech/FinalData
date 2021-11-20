@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from tallyapp.models import ladgernamedata, companydata
+from tallyapp.models import ladgernamedata, companydata,voucherfromtally
 
 
 class ladegerSerializer(serializers.ModelSerializer):
@@ -34,4 +34,8 @@ class UpdateLegderSerializer(serializers.ModelSerializer):
     class Meta:
         model = ladgernamedata
         fields = ['id','ledeger_name','ledeger_email', 'ledeger_phone', 'ledeger_address',
-        'ledeger_state','ledeger_website','ledeger_gstin']    
+        'ledeger_state','ledeger_website','ledeger_gstin']
+class GetvoucherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = voucherfromtally
+        fields = ['Legder','OppositeLegder','Date','Credit','Debit','Vouchetype']
