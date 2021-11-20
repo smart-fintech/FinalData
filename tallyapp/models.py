@@ -37,3 +37,13 @@ class companydata(models.Model):
 
     def __str__(self):
         return self.comp_name        
+class voucherfromtally(models.Model):
+    Legder=models.CharField(max_length=50,null=True,blank=True)
+    OppositeLegder=models.CharField(max_length=100,null=True,blank=True)
+    Date=models.DateField(null=True,blank=True)
+    Credit=models.DecimalField(max_digits=15,null=True,blank=True,decimal_places=2)
+    Debit=models.DecimalField(max_digits=15,null=True,blank=True,decimal_places=2)
+    Vouchetype=models.CharField(max_length=100,null=True,blank=True)
+
+    def __str__(self):
+        return self.OppositeLegder
