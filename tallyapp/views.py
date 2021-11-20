@@ -265,15 +265,27 @@ def creategrup(request):
     return HttpResponse("sucefully submited")
 
 ############################# django restframework start here  #################################
-from tallyapp.models import ladgernamedata
-from tallyapp.serializers import UpdateCompanySerializer, ladegerSerializer,CompanySerializer,UpdateLegderSerializer,NormalCompanySerializer,PostladegerSerializer
-from django.http import Http404
+from tallyapp.models import ladgernamedata,voucherfromtally
+from tallyapp.serializers import UpdateCompanySerializer, GetvoucherSerializer,ladegerSerializer,CompanySerializer,UpdateLegderSerializer,NormalCompanySerializer,PostladegerSerializerfrom django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication,TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+class VoucherPost(APIView):
+    permission_classes = (IsAuthenticated,) 
+    serializer_class = GetvoucherSerializer
+    def get(self, request, format=None):
+        snippets = voucherfromtally.objects.all()
+        serializer = GetvoucherSerializer(snippets, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid()
+        serializer.save()
+        print('doneeeee')
+        return Response(status=status.HTTP_201_CREATED)
 
 class ladegerList(APIView):
     # authentication_classes = (SessionAuthentication,)
@@ -297,7 +309,7 @@ class ladegerList(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid()
         serializer.save(created_by=login_user)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_201_CREATED)
 
 class CompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
@@ -317,7 +329,7 @@ class CompanyList(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid()
         serializer.save(user_company=login_user)
-        return Response(status=status.HTTP_204_NO_CONTENT)  
+        return Response(status=status.HTTP_201_CREATED)  
 
 class NormalCompanyList(APIView):
     # authentication_classes = (SessionAuthentication,)
