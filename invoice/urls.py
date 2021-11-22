@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import Buyerdataeditdelete,Invoicetotal, InvoiceOtherdata,MainInvoiceShow,UpdateHsndetails, Voucherentry,CreateInvoicefilter, BuyerDetailsView, SellerDetailsView, InvoiceDetailsView, InvoiceDataView,CsvInvoicedataAPI,GetcsvInvoicedataAPI,UploadCSVView,UpdatecsvDataAPI,NewMainInvoiceShow,LegderShow,CompanyShow,Sellerdataeditdelete,Invoiceeeditdelete,Invoicedataeeditdelete,ReceiptReportViews,ReceiptInvoicefilter
+from .views import Buyerdataeditdelete,Invoicetotal, PaymentVouchereditdelete,PaymentVoucherentry,InvoiceOtherdata,MainInvoiceShow,UpdateHsndetails, Voucherentry,CreateInvoicefilter, BuyerDetailsView, SellerDetailsView, InvoiceDetailsView, InvoiceDataView,CsvInvoicedataAPI,GetcsvInvoicedataAPI,UploadCSVView,UpdatecsvDataAPI,NewMainInvoiceShow,LegderShow,CompanyShow,Sellerdataeditdelete,Invoiceeeditdelete,Invoicedataeeditdelete,ReceiptReportViews,ReceiptInvoicefilter
 
 urlpatterns = [
     path('receiptinvoice/', ReceiptReportViews.as_view(), name='receiptinvoice'),
@@ -23,6 +23,8 @@ urlpatterns = [
     path('invoiceedit/<int:pk>/',Invoiceeeditdelete.as_view(), name='invoiceedit'),
     path('invoicedataedit/<int:pk>/',Invoicedataeeditdelete.as_view(), name='invoicedataedit'),
     path('voucherinvoice/', Voucherentry.as_view(), name='voucherinvoice'),
+    path('PaymentVoucherentry/', PaymentVoucherentry.as_view(), name='PaymentVoucherentry'),
+    path('PaymentVouchereditdelete/<int:pk>/', PaymentVouchereditdelete.as_view(), name='PaymentVouchereditdelete'),
     path('Invoicetotal/', Invoicetotal.as_view(), name='Invoicetotal'),
     path('InvoiceOtherdata/', InvoiceOtherdata.as_view(), name='InvoiceOtherdata')
     # path('getpdf/', getpdf, name='getpdf'),
