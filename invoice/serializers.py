@@ -155,3 +155,14 @@ class OtherInsurancedata(serializers.ModelSerializer):
     'IGSTInsurance',
     'IGSTFrieght',
     'IGSTOthers',]
+class PaymentVoucherDataSerializer(serializers.Serializer):
+    Narration=serializers.CharField(max_length=1000)
+
+    class Meta:
+        fields = ['Narration']
+
+
+class PaymentVoucherDataSerializer1(serializers.ModelSerializer):
+    class Meta:
+        model=VoucherInvoiceEntry
+        fields = ['Narration','Voucher_date','legdername','Voucher_amount_cr','Voucher_amount_dr','Vouchetype']
