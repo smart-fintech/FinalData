@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from rest_framework.views import APIView
 from .models import BuyerData,SellerData,InvoiceData,Invoice,CSVInvoiceData,Uploadcsv,VoucherInvoiceEntry,CSvTableData
-from .serializers import AnotherMainSerializer,VoucherInvoiceDataSerializer,Uploadcsvserializer,OtherInsurancedata, MainInvoice,ReciptReportSerializer, CreateReportSerializer,BuyerSerializer,companydataSerializer,SellerSerializer,Uploadcsvserializer1,InvoiceSerializer,InvoiceDataSerializer,Getcsvinvoicedata,FileUploadSerializer,MainInvoice,ladgernamedataSerializer
+from .serializers import AnotherMainSerializer,VoucherInvoiceDataSerializer,Uploadcsvserializer,OtherInsurancedata,PaymentVoucherDataSerializer,MainInvoice,ReciptReportSerializer, PaymentVoucherDataSerializer1,CreateReportSerializer,BuyerSerializer,companydataSerializer,SellerSerializer,Uploadcsvserializer1,InvoiceSerializer,InvoiceDataSerializer,Getcsvinvoicedata,FileUploadSerializer,MainInvoice,ladgernamedataSerializer
 from rest_framework import generics, serializers,status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -611,6 +611,118 @@ class Voucherentry(APIView):
                 pass
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class PaymentVoucherentry(APIView):
+    # permission_classes = (IsAuthenticated,)
+    serializer_class = PaymentVoucherDataSerializer
+    def post(self, request, format=None):
+        li=[]
+        model=ladgernamedata.objects.all()
+        for mod in model:
+            li.append(mod.ledeger_name)
+        serializer = PaymentVoucherDataSerializer(data=request.data)
+        p = re.compile(r'(?:Rs\.?|INR)\s*(\d+(?:[.,]\d+)*)|(\d+(?:[.,]\d+)*)\s*(?:Rs\.?|INR)')
+        regEx = r'(\d{2}[\/ -](\d{2}|January|Jan|JAN|February|Feb|FEB|March|Mar|MAR|April|Apr|APR|May|May|MAY|June|Jun|JUN|July|Jul|JUL|August|Aug|AUG|September|Sep|SEP|October|Oct|OCT|November|Nov|NOV|December|Dec|DEC)[\/ -]\d{2,4})'
+        s=request.data['Narration']
+        x=p.findall(s)
+        result = re.findall(regEx,s)
+        serializer.is_valid()
+        date_list=['%d-%m-%y','%d-%m-%Y','%d/%m/%y','%d/%m/%Y','%d-%b-%Y','%d-%B-%Y','%d-%b-%y','%d-%B-%y','%d/%b/%Y','%d/%B/%Y','%d/%b/%y','%d/%B/%y','%d %b %Y','%d %B %Y','%d %b %y','%d %B %y','%B %d,%Y','%d %B,%Y']
+        if 'debited' in s or 'Debited' in s or 'transferred to' in s or 'sent to' in s or 'made a payment' in s:
+            if result:
+                dates=result[0][0]
+                for i in date_list:
+                    try:
+                        x=datetime.datetime.strptime(dates, i).date()
+                    except:
+                        pass
+                for l in li:
+                    if (s.__contains__(l)):
+                        m=VoucherInvoiceEntry(Narration=s,Voucher_date=x,legdername=l,Voucher_amount_dr=0.00,Voucher_amount_cr=x[0][0])
+                        m.save()
+                        break
+                    else:
+                        m=VoucherInvoiceEntry(Narration=s,Voucher_date=x,legdername='',Voucher_amount_dr=0.00,Voucher_amount_cr=x[0][0])
+                        m.save()
+                        break
+            else:
+                for l in li:
+                    if (s.__contains__(l)):
+                        m=VoucherInvoiceEntry(Narration=s,Voucher_date=None,legdername=l,Voucher_amount_dr=0.00,Voucher_amount_cr=x[0][0])
+                        m.save()
+                        break
+                    else:
+                        m=VoucherInvoiceEntry(Narration=s,Voucher_date=None,legdername='',Voucher_amount_dr=0.00,Voucher_amount_cr=x[0][0])
+                        m.save()
+                        break
+
+        elif 'credited' in s or 'Credited' in s or 'transferred from' in s:
+            print(x[0][0],'Credited')
+            if result:
+                dates=result[0][0]
+                for i in date_list:
+                    try:
+                        x=datetime.datetime.strptime(dates, i).date()
+                    except:
+                        pass
+                for l in li:
+                    if (s.__contains__(l)):
+                        m=VoucherInvoiceEntry(Narration=s,Voucher_date=x,legdername=l,Voucher_amount_dr=x[0][0],Voucher_amount_cr=0.00)
+                        m.save()
+                        break
+                    else:
+                        m=VoucherInvoiceEntry(Narration=s,Voucher_date=x,legdername='',Voucher_amount_dr=x[0][0],Voucher_amount_cr=0.00)
+                        m.save()
+                        break
+            else:
+                for l in li:
+                    if (s.__contains__(l)):
+                        m=VoucherInvoiceEntry(Narration=s,Voucher_date=None,legdername=l,Voucher_amount_dr=x[0][0],Voucher_amount_cr=0.00)
+                        m.save()
+                        break
+                    else:
+                        m=VoucherInvoiceEntry(Narration=s,Voucher_date=None,legdername='',Voucher_amount_dr=x[0][0],Voucher_amount_cr=0.00)
+                        m.save()
+                        break
+
+        else:
+            pass
+        
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class PaymentVouchereditdelete(APIView):
+    """
+    Retrieve, update or delete a org instance.
+    """
+    # permission_classes = (IsAuthenticated,)
+    serializer_class = PaymentVoucherDataSerializer1
+    def get_object(self,pk):
+        try:
+            return VoucherInvoiceEntry.objects.get(pk=pk)
+        except VoucherInvoiceEntry.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk,format=None):
+        snippet = self.get_object(pk=pk)
+        serializer = PaymentVoucherDataSerializer1(snippet)
+        return Response(serializer.data)
+
+    def put(self, request,pk,format=None):
+        snippet = self.get_object(pk=pk)
+        serializer = PaymentVoucherDataSerializer1(snippet, data=request.data)
+        if serializer.is_valid():
+            snippet.Voucher_amount_dr=request.data['Voucher_amount_dr']
+            x=request.data['Voucher_amount_dr']
+            snippet.Voucher_amount_dr=-float(x)
+            snippet.save()
+            serializer.save(is_verified=True)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request,pk,format=None):
+        snippet = self.get_object(pk=pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
