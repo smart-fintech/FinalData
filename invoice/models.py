@@ -181,7 +181,7 @@ class VoucherInvoiceEntry(models.Model):
     Voucher_type=models.CharField(max_length=50,null=True,blank=True)
     Voucher_amount_cr=models.DecimalField(max_digits=15,null=True,blank=True,decimal_places=2)
     Voucher_amount_dr=models.DecimalField(max_digits=15,null=True,blank=True,decimal_places=2)
-    Narration=models.CharField(max_length=50,blank=True,null=True)
+    Narration=models.TextField(blank=True,null=True)
     CGSTlegderdata=models.CharField(max_length=50,blank=True,null=True)
     CGSTlegderamount=models.DecimalField(max_digits=15,null=True,blank=True,decimal_places=2)
     SGSTlegderdata=models.CharField(max_length=50,blank=True,null=True)
