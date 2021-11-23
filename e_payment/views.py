@@ -403,7 +403,7 @@ class NLPDataViews(generics.ListAPIView):
         df['Matched']=df['Narration']
         for d in df['Narration']:
             for l in list:
-                if l in d:
+                if l[:4] in d:
                     df['Matched'] = df['Matched'].replace(d,l.upper())
                     break
             else:
