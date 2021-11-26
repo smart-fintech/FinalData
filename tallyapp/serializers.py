@@ -5,7 +5,7 @@ from tallyapp.models import ladgernamedata, companydata,voucherfromtally
 class ladegerSerializer(serializers.ModelSerializer):
     class Meta:
         model = ladgernamedata
-        fields = ['id', 'name']
+        fields = ['id', 'ledeger_name']
 
 class PostladegerSerializer(serializers.ModelSerializer):
     class Meta:
