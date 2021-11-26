@@ -123,35 +123,28 @@ class InvoiceData(models.Model):
 
     def __str__(self):
         return str(self.Invoice_data)
-        
-
 
 class CSVInvoiceData(models.Model):
     Company=models.ForeignKey(companydata,on_delete=models.CASCADE,null=True,blank=True)
     file=models.FileField(upload_to='recieveinvoice/',null=True,blank=True)
-    user=CharField(max_length=30,null=True,blank=True)
+    created_by=models.CharField(max_length=30,null=True,blank=True)
     companyname=models.CharField(max_length=80,null=True,blank=True)
     invoice_no=models.CharField(max_length=800,null=True,blank=True)
     subtotal=models.FloatField(max_length=70,null=True,blank=True)
-    invoice_date=models.CharField(max_length=100,null=True,blank=True)
-    payment_mode=models.CharField(max_length=200,null=True,blank=True)
-    bank_details=models.CharField(max_length=500,null=True,blank=True)
-    company_details=models.CharField(max_length=700,null=True,blank=True)
+    invoice_date=models.DateField(null=True,blank=True)
     CGST=models.CharField(max_length=700,null=True,blank=True)
     SGST = models.CharField(max_length=700,null=True, blank=True)
     IGST = models.CharField(max_length=700,null=True, blank=True)
-    
     created_on=models.DateTimeField(auto_now_add=True,blank=True,null=True)
-
+    StateCode=models.CharField(max_length=10,null=True, blank=True)
     class Meta:
-        unique_together = ('invoice_no', 'subtotal')
+        unique_together = ('invoice_no','invoice_date')
     def __str__(self):
         return self.invoice_no
 
     @property
     def csvreceipt(self):
         return self.csvtabledata_set.all()
-
 
 class CSvTableData(models.Model):
     Invoice_data=models.ForeignKey(CSVInvoiceData,on_delete=models.CASCADE)
