@@ -712,7 +712,7 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
             pass
         print(main_dict)
         for i,j in main_dict.items():
-            for r in (("Invoice No.\n", ""), ("Dated\n", ""),("SGST ", ""),("CGST ", ""),("STATETAX(SGST) ", ""),("CENTRALTAX(CGST) ", ""),("Invoice Number : ", ""), ("Invoice Date : ", ""),("State/UT Code: ", ""),("TOTAL: ","")):
+            for r in (("Invoice No.\n", ""), ("Dated\n", ""),("SGST ", ""),("IGST ", ""),("CGST ", ""),("STATETAX(SGST) ", ""),("CENTRALTAX(CGST) ", ""),("Invoice Number : ", ""), ("Invoice Date : ", ""),("State/UT Code: ", ""),("TOTAL: ","")):
                 j = str(j).replace(*r)
             main_dict.update({i:j})
         date_list=['%d-%m-%y','%d-%m-%Y','%d/%m/%y','%d/%m/%Y','%d-%b-%Y','%d-%B-%Y','%d-%b-%y','%d-%B-%y','%d/%b/%Y','%d/%B/%Y','%d/%b/%y','%d/%B/%y','%d %b %Y','%d.%m.%Y']
