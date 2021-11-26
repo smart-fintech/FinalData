@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from rest_framework.views import APIView
 from .models import BuyerData,SellerData,InvoiceData,Invoice,CSVInvoiceData,Uploadcsv,VoucherInvoiceEntry,CSvTableData
-from .serializers import AnotherMainSerializer,VoucherInvoiceDataSerializer,Uploadcsvserializer,OtherInsurancedata,PaymentVoucherDataSerializer,MainInvoice,ReciptReportSerializer, PaymentVoucherDataSerializer1,CreateReportSerializer,BuyerSerializer,companydataSerializer,SellerSerializer,Uploadcsvserializer1,InvoiceSerializer,InvoiceDataSerializer,Getcsvinvoicedata,FileUploadSerializer,MainInvoice,ladgernamedataSerializer
+from .serializers import AnotherMainSerializer,VoucherInvoiceDataSerializer,OtherInsurancedata, MainInvoice,ReciptReportSerializer, CreateReportSerializer,BuyerSerializer,companydataSerializer,SellerSerializer,Uploadcsvserializer1,InvoiceSerializer,InvoiceDataSerializer,Getcsvinvoicedata,FileUploadSerializer,MainInvoice,Uploadcsvserializer,ladgernamedataSerializer
 from rest_framework import generics, serializers,status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -21,8 +21,17 @@ import os,re,camelot
 import datetime
 # import camelot
 import requests
-from invoice.MLcode.detect import latestcode
 from pdf2image import convert_from_path
+from word2number import w2n
+import typing
+from decimal import Decimal
+
+from borb.pdf.document import Document
+from borb.pdf.pdf import PDF
+from borb.pdf.canvas.geometry.rectangle import Rectangle
+from borb.toolkit.location.location_filter import LocationFilter
+from borb.toolkit.text.regular_expression_text_extraction import RegularExpressionTextExtraction, PDFMatch
+from borb.toolkit.text.simple_text_extraction import SimpleTextExtraction
 
 class ReceiptReportViews(APIView):
     def get(self,request):
@@ -346,96 +355,369 @@ class Invoicedataeeditdelete(APIView):
 
 class CsvInvoicedataAPI(generics.ListCreateAPIView):
     # authentication_classes = (SessionAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = FileUploadSerializer
     def post(self, request, *args, **kwargs):
         login_user=request.user
+        print(login_user)
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid()
-        serializer.save()
+        serializer.save(created_by=login_user)
         value=serializer.data['file']
-        print(value)
-        images = convert_from_path(str(settings.BASE_DIR)+str(value))
-        for i, image in enumerate(images):
-            fname = "test1" + ".jpeg"
-            path = (str(settings.BASE_DIR)+'/invoice/MLcode/output/')
-            image.save(path+ fname) 
-            print(path+ fname)
-        latestcode()
-        df=pd.read_csv(str(settings.BASE_DIR)+'/invoice/MLcode/temp/newocr.csv')
-        def convert_nu(text):
-            num=re.findall(r'[\d]*[.\d]+',text)
-            return "".join(num)
-        df['new_sub']=df['sub_total'].apply(lambda x:convert_nu(x))
-        df["new_sub"] = pd.to_numeric(df["new_sub"], downcast="float")
-        x=df["new_sub"][0]
-        y=x.astype(float)
-        df.to_csv(settings.MEDIA_ROOT +'/recieveinvoice/new.csv')
-        with open(settings.MEDIA_ROOT +'/recieveinvoice/new.csv', 'r') as f:
-            reader=csv.DictReader(f)
-            for row in reader:
-                p= CSVInvoiceData.objects.latest('id')
-                p.user=login_user, 
-                p.companyname=row.get('company_name',''),
-                p.invoice_no=row.get('invoice_number',''),
-                # p.subtotal=z,
-                p.invoice_date=row.get('invoice_date',''),
-                p.payment_mode=row.get('invoice_payment_mode',''),
-                p.bank_details=row.get('company_bank_detail',''),
-                p.company_details=row.get('company_detail',''),
-                p.CGST=row.get('company_tax_detail',''),
-                p.SGST=row.get('company_tax_detail',''),
-                p.IGST=row.get('company_tax_detail',''),
-                model1=companydata.objects.get(id=request.data['Company'])
-                p.Company=model1
-                p.subtotal=y
-                p.save()
-        os.remove('media/recieveinvoice/new.csv')
-        tables = camelot.read_pdf(str(settings.BASE_DIR)+str(value),pages='all')
-        list=['Item Qty','Item Details','HSNCode']
-        for i in tables:
-            for l in list:
-                x=i.df.eq(l).any(axis=0)
-                i.to_csv(str(settings.BASE_DIR)+'/media/recieveinvoice/new.csv')
-            else:
-                pass
-            break
-        def remove1():
-                    x=0
-                    with open(str(settings.BASE_DIR)+'/media/recieveinvoice/new.csv', 'r') as f:
-                        csv_reader = csv.reader(f)
-                        for index,row in enumerate(csv_reader):
-                            if 'HSN/SAC' in row:
-                                x=index
-                                break
-                    return x
-        diff1=remove1()
-        df=pd.read_csv(str(settings.BASE_DIR)+'/media/recieveinvoice/new.csv',header=None)
-        t=df.loc[diff1:]
-        t.columns=t.iloc[0]
-        t=t.reset_index(drop=True)
-        t=t[t['HSN/SAC'] != 'HSN/SAC']
-        t.dropna(subset = ['HSN/SAC'], inplace=True)
-        t.to_csv(str(settings.BASE_DIR)+'/media/recieveinvoice/new.csv')
-        with open(str(settings.BASE_DIR)+'/media/recieveinvoice/new.csv', 'r') as f:
-            reader=csv.DictReader(f)
-            for row in reader:
-                model=CSvTableData.objects.create(
-                    Products=row.get('Description of Goods',''),
-                    HSN_SAC=row.get('HSN/SAC',''),
-                    quantity=row.get('Quantity',''),
-                    Rate=row.get('Rate',''),
-                    Per=row.get('per  Disc. %',''),
-                    Discount=row.get('per  Disc. %',''),
-                    Amount=row.get('Amount',''),
-                )
-                model.save()
-                query = CSVInvoiceData.objects.get(id=p)
-                model.Invoice_data=query
-                model.save()
-        os.remove('media/recieveinvoice/new.csv')
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        value1 = str(settings.BASE_DIR)+value
+        d: typing.Optional[Document] = None
+        l: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Billing Address :")
+        m: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Invoice Number :")
+        n: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Invoice Date :")
+        u: RegularExpressionTextExtraction = RegularExpressionTextExtraction("State/UT Code:")
+        f: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Amount in Words:")
+        o: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Buyer")
+        p: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Invoice No.")
+        q: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Dated")
+        z: RegularExpressionTextExtraction = RegularExpressionTextExtraction("SGST")
+        s: RegularExpressionTextExtraction = RegularExpressionTextExtraction("CGST")
+        t: RegularExpressionTextExtraction = RegularExpressionTextExtraction("IGST")
+        c: RegularExpressionTextExtraction = RegularExpressionTextExtraction("words")
+        main_dict={}
+        main_file=open(value1, "rb")
+        legderlist=[]
+        mod=ladgernamedata.objects.all()
+        for a in mod:
+            legderlist.append(a.ledeger_name)
+        try:
+            if l:
+                d = PDF.loads(main_file, [l])
+                assert d is not None
+                matches: typing.List[PDFMatch] = l.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(180),
+                                            data.get_y() - Decimal(100),
+                                            Decimal(400),
+                                            Decimal(100))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+                d = PDF.loads(main_file, [l0])
+                assert d is not None
+                y=l1.get_text_for_page(0)
+                data=''
+                for leg in legderlist:
+                    if leg[:4] in y:
+                        data=leg
+            main_dict['Buyer Data']=data
+        except:
+            pass
+        try:
+            if m:
+                d = PDF.loads(main_file, [m])
+                assert d is not None
+                matches: typing.List[PDFMatch] = m.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                                        data.get_y() - Decimal(5),
+                                        Decimal(400),
+                                        Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
 
+                d = PDF.loads(main_file, [l0])
+                assert d is not None
+                y=l1.get_text_for_page(0)
+            main_dict['Invoice Number']=y
+        except:
+            pass
+        try:
+            if n:
+                d = PDF.loads(main_file, [n])
+                assert d is not None
+                matches: typing.List[PDFMatch] = n.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                                        data.get_y() - Decimal(5),
+                                        Decimal(400),
+                                        Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+                z=l1.get_text_for_page(0)
+            main_dict['Invoice Date']=z
+        except:
+            pass
+        try:
+            if u:
+                d = PDF.loads(main_file, [u])
+                assert d is not None
+                matches: typing.List[PDFMatch] = u.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                                    data.get_y() - Decimal(5),
+                                    Decimal(400),
+                                    Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+            main_dict['Code']=l1.get_text_for_page(0)
+            
+        except:
+            pass
+        try:
+            if f:
+                d = PDF.loads(main_file, [f])
+                assert d is not None
+                matches: typing.List[PDFMatch] = f.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(100),
+                             data.get_y() - Decimal(20),
+                             Decimal(400),
+                             Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+                y=l1.get_text_for_page(0)
+                try:
+                    main_total=w2n.word_to_num(y)
+                except Exception as e:
+                    nex_txt=''
+                    for i,letter in enumerate(y):
+                        if i and letter.isupper():
+                            nex_txt+=' '
+                        nex_txt+=letter
+                    main_total=w2n.word_to_num(nex_txt)
+            main_dict['Total']=main_total
+        except:
+            pass
+        try:
+            if o:
+                d = PDF.loads(main_file, [o])
+                assert d is not None
+                matches: typing.List[PDFMatch] = o.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(50),
+                                        data.get_y() - Decimal(-40),
+                                        Decimal(200),
+                                        Decimal(200))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+                d = PDF.loads(main_file, [l0])
+                assert d is not None
+                x=l1.get_text_for_page(0)
+                data=''
+                for l in legderlist:
+                    if l[:4] in x:
+                        data=l
+                main_dict['Buyer Data']=data
+        except:
+            pass
+        try:
+            if p:
+                d = PDF.loads(main_file, [p])
+                assert d is not None
+                matches: typing.List[PDFMatch] =p.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                                        data.get_y() - Decimal(15),
+                                        Decimal(100),
+                                        Decimal(25))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+                main_dict['Invoice Number']=l1.get_text_for_page(0)
+        except:
+            pass
+        try:
+            if q:
+                d = PDF.loads(main_file, [q])
+                assert d is not None
+                matches: typing.List[PDFMatch] = q.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                                        data.get_y() - Decimal(15),
+                                        Decimal(100),
+                                        Decimal(25))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+                main_dict['Invoice Date']=l1.get_text_for_page(0)
+        except:
+            pass
+        try:
+            if z:
+                d = PDF.loads(main_file, [z])
+                assert d is not None
+                matches: typing.List[PDFMatch] = z.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                                    data.get_y() - Decimal(5),
+                                    Decimal(400),
+                                    Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+            main_dict['SGST']=l1.get_text_for_page(0)
+        except:
+            pass
+        try:
+            if s:
+                d = PDF.loads(main_file, [s])
+                assert d is not None
+                matches: typing.List[PDFMatch] =s.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                                    data.get_y() - Decimal(5),
+                                    Decimal(500),
+                                    Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+            main_dict['CGST']=l1.get_text_for_page(0)
+        except:
+            pass
+        try:
+            if t:
+                d = PDF.loads(main_file, [t])
+                assert d is not None
+                matches: typing.List[PDFMatch] = t.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                                    data.get_y() - Decimal(5),
+                                    Decimal(400),
+                                    Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+            main_dict['IGST']=l1.get_text_for_page(0)
+        except:
+            pass
+        try:
+            if o:
+                d = PDF.loads(main_file, [o])
+                assert d is not None
+                matches: typing.List[PDFMatch] = o.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(50),
+                                    data.get_y() - Decimal(-5),
+                                    Decimal(200),
+                                    Decimal(300))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+                x=l1.get_text_for_page(0)
+                code=re.findall('\s\d{2}\s',x)
+            main_dict['Code']=code[0]
+        except:
+            pass
+        try:
+            if c:
+                d = PDF.loads(main_file, [c])
+                assert d is not None
+                matches: typing.List[PDFMatch] = c.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(100),
+                             data.get_y() - Decimal(20),
+                             Decimal(400),
+                             Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+                d = PDF.loads(main_file, [l0])
+                assert d is not None
+                x=l1.get_text_for_page(0)
+                try:
+                    main_total=w2n.word_to_num(x)
+                except Exception as e:
+                    nex_txt=''
+                    for i,letter in enumerate(x):
+                        if i and letter.isupper():
+                            nex_txt+=' '
+                        nex_txt+=letter
+                    main_total=w2n.word_to_num(nex_txt)
+                print(main_total)
+            main_dict['Total']=main_total
+        except:
+            pass
+        print(main_dict)
+        for i,j in main_dict.items():
+            for r in (("Invoice No.\n", ""), ("Dated\n", ""),("SGST ", ""),("CGST ", ""),("STATETAX(SGST) ", ""),("CENTRALTAX(CGST) ", ""),("Invoice Number : ", ""), ("Invoice Date : ", ""),("State/UT Code: ", "")):
+                j = str(j).replace(*r)
+            main_dict.update({i:j})
+        date_list=['%d-%m-%y','%d-%m-%Y','%d/%m/%y','%d/%m/%Y','%d-%b-%Y','%d-%B-%Y','%d-%b-%y','%d-%B-%y','%d/%b/%Y','%d/%B/%Y','%d/%b/%y','%d/%B/%y','%d %b %Y','%d.%m.%Y']
+        
+        for i in date_list:
+            try:
+                main_date=datetime.datetime.strptime(main_dict['Invoice Date'], i).date()
+            except:
+                pass
+        inv=CSVInvoiceData.objects.latest('id')
+        inv.companyname=main_dict['Buyer Data']
+        inv.invoice_no=main_dict['Invoice Number']
+        inv.invoice_date=main_date
+        print(main_dict.keys())
+        if 'IGST' in main_dict.keys():
+            inv.IGST=main_dict['IGST']
+        elif 'CGST' in main_dict.keys():
+            print('cgst,sgst')
+            inv.CGST=main_dict['CGST']
+            inv.SGST=main_dict['SGST']
+        else:
+            pass
+        inv.StateCode=main_dict['Code']
+        model1=companydata.objects.get(id=request.data['Company'])
+        inv.Company=model1
+        inv.subtotal=main_dict['Total']
+        inv.file=request.data['file']
+        inv.save()
+        return Response(status=status.HTTP_201_CREATED)
     def get(self, request, *args, **kwargs):
         loginuser=request.user
         query = CSVInvoiceData.objects.latest('id')
