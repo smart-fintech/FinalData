@@ -371,6 +371,7 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
         n: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Invoice Date :")
         u: RegularExpressionTextExtraction = RegularExpressionTextExtraction("State/UT Code:")
         f: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Amount in Words:")
+        rup: RegularExpressionTextExtraction = RegularExpressionTextExtraction("TOTAL:")
         o: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Buyer")
         p: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Invoice No.")
         q: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Dated")
@@ -502,6 +503,29 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
                         nex_txt+=letter
                     main_total=w2n.word_to_num(nex_txt)
             main_dict['Total']=main_total
+        except:
+            pass
+        try:
+            if rup:
+                d = PDF.loads(main_file, [rup])
+                assert d is not None
+                matches: typing.List[PDFMatch] = rup.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(100),
+                             data.get_y() - Decimal(10),
+                             Decimal(575),
+                             Decimal(20))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+                z=l1.get_text_for_page(0)
+                new=z.replace('�','')
+            main_dict['GST Total']=new
         except:
             pass
         try:
@@ -688,7 +712,7 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
             pass
         print(main_dict)
         for i,j in main_dict.items():
-            for r in (("Invoice No.\n", ""), ("Dated\n", ""),("SGST ", ""),("CGST ", ""),("STATETAX(SGST) ", ""),("CENTRALTAX(CGST) ", ""),("Invoice Number : ", ""), ("Invoice Date : ", ""),("State/UT Code: ", "")):
+            for r in (("Invoice No.\n", ""), ("Dated\n", ""),("SGST ", ""),("CGST ", ""),("STATETAX(SGST) ", ""),("CENTRALTAX(CGST) ", ""),("Invoice Number : ", ""), ("Invoice Date : ", ""),("State/UT Code: ", ""),("TOTAL: ","")):
                 j = str(j).replace(*r)
             main_dict.update({i:j})
         date_list=['%d-%m-%y','%d-%m-%Y','%d/%m/%y','%d/%m/%Y','%d-%b-%Y','%d-%B-%Y','%d-%b-%y','%d-%B-%y','%d/%b/%Y','%d/%B/%Y','%d/%b/%y','%d/%B/%y','%d %b %Y','%d.%m.%Y']
@@ -702,13 +726,46 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
         inv.companyname=main_dict['Buyer Data']
         inv.invoice_no=main_dict['Invoice Number']
         inv.invoice_date=main_date
-        print(main_dict.keys())
-        if 'IGST' in main_dict.keys():
-            inv.IGST=main_dict['IGST']
+        igst: RegularExpressionTextExtraction = RegularExpressionTextExtraction("IGST")
+        gst=''
+        try:
+            if igst:
+                d = PDF.loads(main_file, [igst])
+                assert d is not None
+                matches: typing.List[PDFMatch] = igst.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                             data.get_y() - Decimal(10),
+                             Decimal(80),
+                             Decimal(20))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+                gst=l1.get_text_for_page(0)
+        except:
+            pass
+        if 'GST Total' in main_dict.keys():
+            if 'IGST' in gst:
+                inv.IGST=main_dict['GST Total']
+                inv.save()
+            else:
+                s=main_dict['GST Total'].replace(',','')
+                amount=float(s)
+                cgst=amount/2
+                inv.CGST=round(cgst,2)
+                inv.SGST=round(cgst,2)
+                inv.save()
         elif 'CGST' in main_dict.keys():
             print('cgst,sgst')
             inv.CGST=main_dict['CGST']
             inv.SGST=main_dict['SGST']
+        elif 'IGST' in main_dict.keys():
+            inv.IGST=main_dict['IGST']
         else:
             pass
         inv.StateCode=main_dict['Code']
@@ -717,6 +774,54 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
         inv.subtotal=main_dict['Total']
         inv.file=request.data['file']
         inv.save()
+        name_of_file=str(settings.BASE_DIR)+'/media/tabula/tabula-amz invoice 040421.csv'
+        file=open(name_of_file,'r')
+        df=pd.read_csv(file)
+        if 'Description of Goods' in df.columns:
+            newdf=df.dropna(thresh=df.shape[1]-6, axis=0)
+            newdf.to_csv(name_of_file)
+            file=open(name_of_file,'r')
+            inv=CSVInvoiceData.objects.latest('id')
+            csv_reader = csv.DictReader(file)
+            for row in csv_reader:
+                model=CSvTableData.objects.create(
+                                Products=row.get('Description of Goods',''),
+                                HSN_SAC=row.get('HSN/SAC',''),
+                                GST_rate=row.get('GST',''),
+                                Rate=row.get('Rate',''),
+                                quantity=row.get('Quantity',''),
+                                Discount=row.get('Disc. %',''),
+                                Amount=row.get('Amount',''),
+                                Per=row.get('per','')
+                                )
+                model.Invoice_data=inv
+                model.save()
+        else:
+            file=open(name_of_file,'r')
+            df=pd.read_csv(file)
+            df.columns = [x.strip().replace('\r', '') for x in df.columns]
+            df.columns = [x.strip().replace('\n', '') for x in df.columns]
+            newdf=df.dropna(thresh=df.shape[1]-6, axis=0)
+            newdf = newdf[newdf['Description'] != 'Description']
+            newdf.replace(to_replace="\\r[$&+,:;=?@#|'<>.^*%!-]\₹\d{1,}[.]\d{1,}|\\r\₹\d{1,}[.]\d{1,}|\\r\d{1,}\W|\\rIGST|\\rCGST|\\rSGST|\\r|\\n[$&+,:;=?@#|'<>.^*%!-]\₹\d{1,}[.]\d{1,}|\\n\₹\d{1,}[.]\d{1,}|\\n\d{1,}\W|\\nIGST|\\nCGST|\\nSGST|\\n", value="", regex=True, inplace=True)
+            print(newdf)
+            newdf.to_csv(name_of_file)
+            file=open(name_of_file,'r')
+            inv=CSVInvoiceData.objects.latest('id')
+            csv_reader = csv.DictReader(file)
+            for row in csv_reader:
+                model=CSvTableData.objects.create(
+                                Products=row.get('Description',''),
+                                HSN_SAC=row.get('HSN/SAC',''),
+                                GST_rate=row.get('TaxRate',''),
+                                Rate=row.get('UnitPrice',''),
+                                quantity=row.get('Qty',''),
+                                Discount=row.get('Discount',''),
+                                Amount=row.get('NetAmount',''),
+                                Per=row.get('per','')
+                                )
+                model.Invoice_data=inv
+                model.save()
         return Response(status=status.HTTP_201_CREATED)
     def get(self, request, *args, **kwargs):
         loginuser=request.user
