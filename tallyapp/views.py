@@ -295,7 +295,8 @@ class ladegerList(APIView):
         login_user=request.user
         snippets = ladgernamedata.objects.all()
         serializer = ladegerSerializer(snippets, many=True)
-        return Response(serializer.data)class LegderPost(APIView):
+        return Response(serializer.data)
+class LegderPost(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = PostladegerSerializer
     def get(self, request, format=None):
