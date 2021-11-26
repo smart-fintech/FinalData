@@ -8,6 +8,7 @@ from django.db.models.deletion import CASCADE
 class ladgernamedata(models.Model):
     ledeger_name = models.CharField(max_length=40, blank=True, null=True)
     ledeger_phone = models.CharField(max_length=40, blank=True, null=True)
+    ledeger_group = models.CharField(max_length=40, blank=True, null=True)
     ledeger_email=models.EmailField(blank=True, null=True)
     ledeger_name = models.CharField(max_length=40, blank=True, null=True)
     ledeger_address=models.CharField(max_length=600, blank=True, null=True)
