@@ -309,7 +309,7 @@ class LegderPost(APIView):
         login_user=request.user
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid()
-        serializer.save(created_by=login_user)
+        serializer.save(created_by=login_user,ledeger_group='Capital Account')
         return Response(status=status.HTTP_201_CREATED)
 
 class CompanyList(APIView):
