@@ -60,3 +60,4 @@ urllib3==1.26.7
 psycopg2-binary==2.8.6
 getmac==0.8.2
 python-decouple==3.5
+django-environ==0.8.1
