@@ -11,20 +11,20 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
-
+import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
+env=environ.Env()
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '=^dz+bda_coz4b13m27a@l2p0(k*b5u_gm22cpy-7k30y0zupe'
-
+SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
@@ -132,28 +132,19 @@ CORS_ALLOW_HEADERS = [
 'x-csrftoken',
 'x-requested-with',
 ]
+
+
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'fintech', 
-#         'USER': 'postgres', 
-#         'PASSWORD':'admin123',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
+#         'NAME': env('DATABASE_NAME'), 
+#         'USER': env('DATABASE_USER'), 
+#         'PASSWORD':env('DATABASE_PASS'),  
+#         'HOST': env('DATABASE_HOST'), 
+#         'PORT': env('DATABASE_PORT'),
 #     }
 # }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'Intelligere',
-#         'PASSWORD':'mypassword',
-#         'USER':'user_name',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
-
 AUTH_USER_MODEL = 'accountapp.User'
 REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY': 'error',
