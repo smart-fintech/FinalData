@@ -1,6 +1,6 @@
 from django.db.models import fields
 from rest_framework import serializers
-from .models import BuyerData,SellerData,Invoice,InvoiceData,CSVInvoiceData, Uploadcsv,CSvTableData,VoucherInvoiceEntry
+from .models import BuyerData,SellerData,Invoice,InvoiceData,CSVInvoiceData, Uploadcsv,CSVTableData,VoucherInvoiceEntry
 from tallyapp.models import companydata,ladgernamedata
 
 
@@ -77,15 +77,15 @@ class FileUploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = CSVInvoiceData
         fields = ('file','Company')
-class CSVTableData(serializers.ModelSerializer):
+class CSVTableData1(serializers.ModelSerializer):
     class Meta:
-        model = CSvTableData
+        model = CSVTableData
         fields='__all__'
 class Getcsvinvoicedata(serializers.ModelSerializer):
-    csvreceipt=CSVTableData(read_only=True,many=True)
+    csvreceipt=CSVTableData1(read_only=True,many=True)
     class Meta:
         model = CSVInvoiceData
-        fields = ['id','companyname','file','invoice_no','subtotal','invoice_date','payment_mode','CGST','SGST','IGST','bank_details','company_details','csvreceipt']
+        fields = ['id','companyname','file','invoice_no','subtotal','invoice_date','CGST','SGST','IGST','csvreceipt']
     def create(self, validated_data):
         return CSVInvoiceData.objects.create(**validated_data)
 
@@ -109,13 +109,11 @@ class AnotherMainSerializer(serializers.ModelSerializer):
         fields=['id','Invoice_no','Buyer_data','Seller_data','Total','Invoice_date','P_O_no','P_O_date','Terms_of_payment','Reference_no','Delievry_note','file','invoicedatas']
 class CSVTableData1(serializers.ModelSerializer):
     class Meta:
-        model = CSvTableData
+        model = CSVTableData
         fields='__all__'
 
 class ReciptReportSerializer(serializers.ModelSerializer):
     csvreceipt=CSVTableData1(read_only=True,many=True)
-    
-
     class Meta:
         model=CSVInvoiceData
         fields = ['id','file','companyname','Company','invoice_no','subtotal','invoice_date','payment_mode','CGST','SGST','IGST','bank_details','company_details','csvreceipt']

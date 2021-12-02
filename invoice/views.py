@@ -9,8 +9,8 @@ from django.db.models import manager, query
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from rest_framework.views import APIView
-from .models import BuyerData,SellerData,InvoiceData,Invoice,CSVInvoiceData,Uploadcsv,VoucherInvoiceEntry,CSvTableData
-from .serializers import AnotherMainSerializer,VoucherInvoiceDataSerializer,OtherInsurancedata, MainInvoice,ReciptReportSerializer, CreateReportSerializer,BuyerSerializer,companydataSerializer,SellerSerializer,Uploadcsvserializer1,InvoiceSerializer,InvoiceDataSerializer,Getcsvinvoicedata,FileUploadSerializer,MainInvoice,Uploadcsvserializer,ladgernamedataSerializer
+from .models import BuyerData,SellerData,InvoiceData,Invoice,CSVInvoiceData,Uploadcsv,VoucherInvoiceEntry,CSVTableData
+from .serializers import AnotherMainSerializer,VoucherInvoiceDataSerializer,OtherInsurancedata, MainInvoice,ReciptReportSerializer, PaymentVoucherDataSerializer,PaymentVoucherDataSerializer1,CreateReportSerializer,BuyerSerializer,companydataSerializer,SellerSerializer,Uploadcsvserializer1,InvoiceSerializer,InvoiceDataSerializer,Getcsvinvoicedata,FileUploadSerializer,MainInvoice,Uploadcsvserializer,ladgernamedataSerializer
 from rest_framework import generics, serializers,status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -365,13 +365,6 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
         serializer.save(created_by=login_user)
         value=serializer.data['file']
         value1 = str(settings.BASE_DIR)+value
-        d: typing.Optional[Document] = None
-        l: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Billing Address :")
-        m: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Invoice Number :")
-        n: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Invoice Date :")
-        u: RegularExpressionTextExtraction = RegularExpressionTextExtraction("State/UT Code:")
-        f: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Amount in Words:")
-        rup: RegularExpressionTextExtraction = RegularExpressionTextExtraction("TOTAL:")
         o: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Buyer")
         p: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Invoice No.")
         q: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Dated")
@@ -385,149 +378,6 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
         mod=ladgernamedata.objects.all()
         for a in mod:
             legderlist.append(a.ledeger_name)
-        try:
-            if l:
-                d = PDF.loads(main_file, [l])
-                assert d is not None
-                matches: typing.List[PDFMatch] = l.get_matches_for_page(0)
-                assert len(matches) >= 0
-                data=matches[0].get_bounding_boxes()[0]
-                r: Rectangle = Rectangle(data.get_x() - Decimal(180),
-                                            data.get_y() - Decimal(100),
-                                            Decimal(400),
-                                            Decimal(100))
-                l0: LocationFilter = LocationFilter(r)
-                l1: SimpleTextExtraction = SimpleTextExtraction()
-                l0.add_listener(l1)
-                d = PDF.loads(main_file, [l0])
-                assert d is not None
-                y=l1.get_text_for_page(0)
-                data=''
-                for leg in legderlist:
-                    if leg[:4] in y:
-                        data=leg
-            main_dict['Buyer Data']=data
-        except:
-            pass
-        try:
-            if m:
-                d = PDF.loads(main_file, [m])
-                assert d is not None
-                matches: typing.List[PDFMatch] = m.get_matches_for_page(0)
-                assert len(matches) >= 0
-                data=matches[0].get_bounding_boxes()[0]
-                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
-                                        data.get_y() - Decimal(5),
-                                        Decimal(400),
-                                        Decimal(10))
-                l0: LocationFilter = LocationFilter(r)
-                l1: SimpleTextExtraction = SimpleTextExtraction()
-                l0.add_listener(l1)
-
-                d = PDF.loads(main_file, [l0])
-                assert d is not None
-                y=l1.get_text_for_page(0)
-            main_dict['Invoice Number']=y
-        except:
-            pass
-        try:
-            if n:
-                d = PDF.loads(main_file, [n])
-                assert d is not None
-                matches: typing.List[PDFMatch] = n.get_matches_for_page(0)
-                assert len(matches) >= 0
-                data=matches[0].get_bounding_boxes()[0]
-                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
-                                        data.get_y() - Decimal(5),
-                                        Decimal(400),
-                                        Decimal(10))
-                l0: LocationFilter = LocationFilter(r)
-                l1: SimpleTextExtraction = SimpleTextExtraction()
-                l0.add_listener(l1)
-
-                d = PDF.loads(main_file, [l0])
-
-                assert d is not None
-                z=l1.get_text_for_page(0)
-            main_dict['Invoice Date']=z
-        except:
-            pass
-        try:
-            if u:
-                d = PDF.loads(main_file, [u])
-                assert d is not None
-                matches: typing.List[PDFMatch] = u.get_matches_for_page(0)
-                assert len(matches) >= 0
-                data=matches[0].get_bounding_boxes()[0]
-                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
-                                    data.get_y() - Decimal(5),
-                                    Decimal(400),
-                                    Decimal(10))
-                l0: LocationFilter = LocationFilter(r)
-                l1: SimpleTextExtraction = SimpleTextExtraction()
-                l0.add_listener(l1)
-
-                d = PDF.loads(main_file, [l0])
-
-                assert d is not None
-            main_dict['Code']=l1.get_text_for_page(0)
-            
-        except:
-            pass
-        try:
-            if f:
-                d = PDF.loads(main_file, [f])
-                assert d is not None
-                matches: typing.List[PDFMatch] = f.get_matches_for_page(0)
-                assert len(matches) >= 0
-                data=matches[0].get_bounding_boxes()[0]
-                r: Rectangle = Rectangle(data.get_x() - Decimal(100),
-                             data.get_y() - Decimal(20),
-                             Decimal(400),
-                             Decimal(10))
-                l0: LocationFilter = LocationFilter(r)
-                l1: SimpleTextExtraction = SimpleTextExtraction()
-                l0.add_listener(l1)
-
-                d = PDF.loads(main_file, [l0])
-
-                assert d is not None
-                y=l1.get_text_for_page(0)
-                try:
-                    main_total=w2n.word_to_num(y)
-                except Exception as e:
-                    nex_txt=''
-                    for i,letter in enumerate(y):
-                        if i and letter.isupper():
-                            nex_txt+=' '
-                        nex_txt+=letter
-                    main_total=w2n.word_to_num(nex_txt)
-            main_dict['Total']=main_total
-        except:
-            pass
-        try:
-            if rup:
-                d = PDF.loads(main_file, [rup])
-                assert d is not None
-                matches: typing.List[PDFMatch] = rup.get_matches_for_page(0)
-                assert len(matches) >= 0
-                data=matches[0].get_bounding_boxes()[0]
-                r: Rectangle = Rectangle(data.get_x() - Decimal(100),
-                             data.get_y() - Decimal(10),
-                             Decimal(575),
-                             Decimal(20))
-                l0: LocationFilter = LocationFilter(r)
-                l1: SimpleTextExtraction = SimpleTextExtraction()
-                l0.add_listener(l1)
-
-                d = PDF.loads(main_file, [l0])
-
-                assert d is not None
-                z=l1.get_text_for_page(0)
-                new=z.replace('�','')
-            main_dict['GST Total']=new
-        except:
-            pass
         try:
             if o:
                 d = PDF.loads(main_file, [o])
@@ -697,17 +547,292 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
                 d = PDF.loads(main_file, [l0])
                 assert d is not None
                 x=l1.get_text_for_page(0)
+                nex_txt=''
+                for i,letter in enumerate(x):
+                    if i and letter.isupper():
+                        nex_txt+=' '
+                    nex_txt+=letter
+                main_total=w2n.word_to_num(nex_txt)
+            main_dict['Total']=main_total
+        except:
+            pass
+        print(main_dict)
+        for i,j in main_dict.items():
+            for r in (("Invoice No.\n", ""), ("Dated\n", ""),("SGST ", ""),("IGST ", ""),("CGST ", ""),("STATETAX(SGST) ", ""),("CENTRALTAX(CGST) ", ""),("Invoice Number : ", ""), ("Invoice Date : ", ""),("State/UT Code: ", ""),("TOTAL: ","")):
+                j = str(j).replace(*r)
+            main_dict.update({i:j})
+        date_list=['%d-%m-%y','%d-%m-%Y','%d/%m/%y','%d/%m/%Y','%d-%b-%Y','%d-%B-%Y','%d-%b-%y','%d-%B-%y','%d/%b/%Y','%d/%B/%Y','%d/%b/%y','%d/%B/%y','%d %b %Y','%d.%m.%Y']
+        
+        for i in date_list:
+            try:
+                main_date=datetime.datetime.strptime(main_dict['Invoice Date'], i).date()
+            except:
+                pass
+        inv=CSVInvoiceData.objects.latest('id')
+        inv.companyname=main_dict['Buyer Data']
+        inv.invoice_no=main_dict['Invoice Number']
+        inv.invoice_date=main_date
+        igst: RegularExpressionTextExtraction = RegularExpressionTextExtraction("IGST")
+        gst=''
+        try:
+            if igst:
+                d = PDF.loads(main_file, [igst])
+                assert d is not None
+                matches: typing.List[PDFMatch] = igst.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                             data.get_y() - Decimal(10),
+                             Decimal(80),
+                             Decimal(20))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+                gst=l1.get_text_for_page(0)
+        except:
+            pass
+        if 'CGST' in main_dict.keys():
+            print('cgst,sgst')
+            inv.CGST=main_dict['CGST']
+            inv.SGST=main_dict['SGST']
+        elif 'IGST' in main_dict.keys():
+            inv.IGST=main_dict['IGST']
+        else:
+            pass
+        inv.StateCode=main_dict['Code']
+        model1=companydata.objects.get(id=request.data['Company'])
+        inv.Company=model1
+        if 'Total' in main_dict.keys():
+            inv.subtotal=main_dict['Total']
+        else:
+            pass
+        inv.save()
+        # name_of_file=str(settings.BASE_DIR)+'/media/tabula/tabula-Accounting Voucher Display.pdfDIGITAL3.csv'
+        # file=open(name_of_file,'r')
+        # df=pd.read_csv(file)
+        # newdf=df.dropna(thresh=df.shape[1]-6, axis=0)
+        # newdf.to_csv(name_of_file)
+        # file=open(name_of_file,'r')
+        # inv=CSVInvoiceData.objects.latest('id')
+        # csv_reader = csv.DictReader(file)
+        # for row in csv_reader:
+        #     model=CSVTableData.objects.create(
+        #                     Products=row.get('Description of Goods',''),
+        #                     HSN_SAC=row.get('HSN/SAC',''),
+        #                     GST_rate=row.get('GST',''),
+        #                     Rate=row.get('Rate',''),
+        #                     quantity=row.get('Quantity',''),
+        #                     Discount=row.get('Disc. %',''),
+        #                     Amount=row.get('Amount',''),
+        #                     Per=row.get('per','')
+        #                     )
+        #     model.Invoice_data=inv
+        #     model.save()
+        return Response(status=status.HTTP_201_CREATED)
+    def get(self, request, *args, **kwargs):
+        query = CSVInvoiceData.objects.latest('id')
+        serializer = Getcsvinvoicedata(query)
+        return Response(serializer.data)
+
+class TabledataAPI(generics.ListCreateAPIView):
+    # permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        name_of_file=str(settings.BASE_DIR)+'/media/tabula/tabula-Accounting Voucher Display.pdfDIGITAL3.csv'
+        file=open(name_of_file,'r')
+        df=pd.read_csv(file)
+        newdf=df.dropna(thresh=df.shape[1]-6, axis=0)
+        newdf.to_csv(name_of_file)
+        file=open(name_of_file,'r')
+        inv=CSVInvoiceData.objects.latest('id')
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            print(row)
+            model=CSVTableData()
+            model.Products=row.get('Description of Goods',''),
+            model.HSN_SAC=row.get('HSN/SAC',''),
+            model.GST_rate=row.get('GST',''),
+            model.Rate=row.get('Rate',''),
+            model.quantity=row.get('Quantity',''),
+            model.Discount=row.get('Disc. %',''),
+            model.Amount=row.get('Amount',''),
+            model.Per=row.get('per','')
+            model.Invoice_data=inv
+            model.save()
+        return Response(status=status.HTTP_201_CREATED)
+    def get(self, request, *args, **kwargs):
+        query = CSVInvoiceData.objects.latest('id')
+        serializer = Getcsvinvoicedata(query)
+        return Response(serializer.data)
+class CsvamazonInvoicedataAPI(generics.ListCreateAPIView):
+    # authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FileUploadSerializer
+    def post(self, request, *args, **kwargs):
+        login_user=request.user
+        print(login_user)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid()
+        serializer.save(created_by=login_user)
+        value=serializer.data['file']
+        value1 = str(settings.BASE_DIR)+value
+        d: typing.Optional[Document] = None
+        l: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Billing Address :")
+        m: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Invoice Number :")
+        n: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Invoice Date :")
+        u: RegularExpressionTextExtraction = RegularExpressionTextExtraction("State/UT Code:")
+        f: RegularExpressionTextExtraction = RegularExpressionTextExtraction("Amount in Words:")
+        rup: RegularExpressionTextExtraction = RegularExpressionTextExtraction("TOTAL:")
+        main_dict={}
+        main_file=open(value1, "rb")
+        legderlist=[]
+        mod=ladgernamedata.objects.all()
+        for a in mod:
+            legderlist.append(a.ledeger_name)
+        try:
+            if l:
+                d = PDF.loads(main_file, [l])
+                assert d is not None
+                matches: typing.List[PDFMatch] = l.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(180),
+                                            data.get_y() - Decimal(100),
+                                            Decimal(400),
+                                            Decimal(100))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+                d = PDF.loads(main_file, [l0])
+                assert d is not None
+                y=l1.get_text_for_page(0)
+                data=''
+                for leg in legderlist:
+                    if leg[:4] in y:
+                        data=leg
+            main_dict['Buyer Data']=data
+        except:
+            pass
+        try:
+            if m:
+                d = PDF.loads(main_file, [m])
+                assert d is not None
+                matches: typing.List[PDFMatch] = m.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                                        data.get_y() - Decimal(5),
+                                        Decimal(400),
+                                        Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+                assert d is not None
+                y=l1.get_text_for_page(0)
+            main_dict['Invoice Number']=y
+        except:
+            pass
+        try:
+            if n:
+                d = PDF.loads(main_file, [n])
+                assert d is not None
+                matches: typing.List[PDFMatch] = n.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                                        data.get_y() - Decimal(5),
+                                        Decimal(400),
+                                        Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+                z=l1.get_text_for_page(0)
+            main_dict['Invoice Date']=z
+        except:
+            pass
+        try:
+            if u:
+                d = PDF.loads(main_file, [u])
+                assert d is not None
+                matches: typing.List[PDFMatch] = u.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(10),
+                                    data.get_y() - Decimal(5),
+                                    Decimal(400),
+                                    Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+            main_dict['Code']=l1.get_text_for_page(0)
+            
+        except:
+            pass
+        try:
+            if f:
+                d = PDF.loads(main_file, [f])
+                assert d is not None
+                matches: typing.List[PDFMatch] = f.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(100),
+                             data.get_y() - Decimal(20),
+                             Decimal(400),
+                             Decimal(10))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+                y=l1.get_text_for_page(0)
                 try:
-                    main_total=w2n.word_to_num(x)
+                    main_total=w2n.word_to_num(y)
                 except Exception as e:
                     nex_txt=''
-                    for i,letter in enumerate(x):
+                    for i,letter in enumerate(y):
                         if i and letter.isupper():
                             nex_txt+=' '
                         nex_txt+=letter
                     main_total=w2n.word_to_num(nex_txt)
-                print(main_total)
             main_dict['Total']=main_total
+        except:
+            pass
+        try:
+            if rup:
+                d = PDF.loads(main_file, [rup])
+                assert d is not None
+                matches: typing.List[PDFMatch] = rup.get_matches_for_page(0)
+                assert len(matches) >= 0
+                data=matches[0].get_bounding_boxes()[0]
+                r: Rectangle = Rectangle(data.get_x() - Decimal(100),
+                             data.get_y() - Decimal(10),
+                             Decimal(575),
+                             Decimal(20))
+                l0: LocationFilter = LocationFilter(r)
+                l1: SimpleTextExtraction = SimpleTextExtraction()
+                l0.add_listener(l1)
+
+                d = PDF.loads(main_file, [l0])
+
+                assert d is not None
+                z=l1.get_text_for_page(0)
+                new=z.replace('�','')
+            main_dict['GST Total']=new
         except:
             pass
         print(main_dict)
@@ -760,12 +885,6 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
                 inv.CGST=round(cgst,2)
                 inv.SGST=round(cgst,2)
                 inv.save()
-        elif 'CGST' in main_dict.keys():
-            print('cgst,sgst')
-            inv.CGST=main_dict['CGST']
-            inv.SGST=main_dict['SGST']
-        elif 'IGST' in main_dict.keys():
-            inv.IGST=main_dict['IGST']
         else:
             pass
         inv.StateCode=main_dict['Code']
@@ -774,61 +893,69 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
         inv.subtotal=main_dict['Total']
         inv.file=request.data['file']
         inv.save()
-        name_of_file=str(settings.BASE_DIR)+'/media/tabula/tabula-amz invoice 040421.csv'
-        file=open(name_of_file,'r')
-        df=pd.read_csv(file)
-        if 'Description of Goods' in df.columns:
-            newdf=df.dropna(thresh=df.shape[1]-6, axis=0)
-            newdf.to_csv(name_of_file)
-            file=open(name_of_file,'r')
-            inv=CSVInvoiceData.objects.latest('id')
-            csv_reader = csv.DictReader(file)
-            for row in csv_reader:
-                model=CSvTableData.objects.create(
-                                Products=row.get('Description of Goods',''),
-                                HSN_SAC=row.get('HSN/SAC',''),
-                                GST_rate=row.get('GST',''),
-                                Rate=row.get('Rate',''),
-                                quantity=row.get('Quantity',''),
-                                Discount=row.get('Disc. %',''),
-                                Amount=row.get('Amount',''),
-                                Per=row.get('per','')
-                                )
-                model.Invoice_data=inv
-                model.save()
-        else:
-            file=open(name_of_file,'r')
-            df=pd.read_csv(file)
-            df.columns = [x.strip().replace('\r', '') for x in df.columns]
-            df.columns = [x.strip().replace('\n', '') for x in df.columns]
-            newdf=df.dropna(thresh=df.shape[1]-6, axis=0)
-            newdf = newdf[newdf['Description'] != 'Description']
-            newdf.replace(to_replace="\\r[$&+,:;=?@#|'<>.^*%!-]\₹\d{1,}[.]\d{1,}|\\r\₹\d{1,}[.]\d{1,}|\\r\d{1,}\W|\\rIGST|\\rCGST|\\rSGST|\\r|\\n[$&+,:;=?@#|'<>.^*%!-]\₹\d{1,}[.]\d{1,}|\\n\₹\d{1,}[.]\d{1,}|\\n\d{1,}\W|\\nIGST|\\nCGST|\\nSGST|\\n", value="", regex=True, inplace=True)
-            print(newdf)
-            newdf.to_csv(name_of_file)
-            file=open(name_of_file,'r')
-            inv=CSVInvoiceData.objects.latest('id')
-            csv_reader = csv.DictReader(file)
-            for row in csv_reader:
-                model=CSvTableData.objects.create(
-                                Products=row.get('Description',''),
-                                HSN_SAC=row.get('HSN/SAC',''),
-                                GST_rate=row.get('TaxRate',''),
-                                Rate=row.get('UnitPrice',''),
-                                quantity=row.get('Qty',''),
-                                Discount=row.get('Discount',''),
-                                Amount=row.get('NetAmount',''),
-                                Per=row.get('per','')
-                                )
-                model.Invoice_data=inv
-                model.save()
+        # name_of_file=str(settings.BASE_DIR)+'/media/tabula/tabula-amz invoice 040421.csv'
+        # file=open(name_of_file,'r')
+        # df=pd.read_csv(file)
+        # file=open(name_of_file,'r')
+        # df=pd.read_csv(file)
+        # df.columns = [x.strip().replace('\r', '') for x in df.columns]
+        # df.columns = [x.strip().replace('\n', '') for x in df.columns]
+        # newdf=df.dropna(thresh=df.shape[1]-6, axis=0)
+        # newdf = newdf[newdf['Description'] != 'Description']
+        # newdf.replace(to_replace="\\r[$&+,:;=?@#|'<>.^*%!-]\₹\d{1,}[.]\d{1,}|\\r\₹\d{1,}[.]\d{1,}|\\r\d{1,}\W|\\rIGST|\\rCGST|\\rSGST|\\r|\\n[$&+,:;=?@#|'<>.^*%!-]\₹\d{1,}[.]\d{1,}|\\n\₹\d{1,}[.]\d{1,}|\\n\d{1,}\W|\\nIGST|\\nCGST|\\nSGST|\\n", value="", regex=True, inplace=True)
+        # newdf.to_csv(name_of_file)
+        # file=open(name_of_file,'r')
+        # inv=CSVInvoiceData.objects.latest('id')
+        # csv_reader = csv.DictReader(file)
+        # for row in csv_reader:
+        #     print('ggg')
+        #     model=CSVTableData.objects.create(
+        #                     Products=row.get('Description',''),
+        #                     HSN_SAC=row.get('HSN/SAC',''),
+        #                     GST_rate=row.get('TaxRate',''),
+        #                     Rate=row.get('UnitPrice',''),
+        #                     quantity=row.get('Qty',''),
+        #                     Discount=row.get('Discount',''),
+        #                     Amount=row.get('NetAmount',''),
+        #                     Per=row.get('per','')
+        #                     )
+        #     model.Invoice_data=inv
+        #     model.save()
+        #     print('gfhj')
         return Response(status=status.HTTP_201_CREATED)
     def get(self, request, *args, **kwargs):
-        loginuser=request.user
         query = CSVInvoiceData.objects.latest('id')
         serializer = Getcsvinvoicedata(query)
         return Response(serializer.data)
-
+class AmazonTabledataAPI(generics.ListCreateAPIView):
+    # permission_classes = (IsAuthenticated,)
+    def post(self, request, *args, **kwargs):
+        name_of_file=str(settings.BASE_DIR)+'/media/tabula/tabula-Accounting Voucher Display.pdfDIGITAL3.csv'
+        file=open(name_of_file,'r')
+        df=pd.read_csv(file)
+        newdf=df.dropna(thresh=df.shape[1]-6, axis=0)
+        newdf.to_csv(name_of_file)
+        file=open(name_of_file,'r')
+        inv=CSVInvoiceData.objects.latest('id')
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            print(row)
+            model=CSVTableData()
+            model.Products=row.get('Description of Goods',''),
+            model.HSN_SAC=row.get('HSN/SAC',''),
+            model.GST_rate=row.get('GST',''),
+            model.Rate=row.get('Rate',''),
+            model.quantity=row.get('Quantity',''),
+            model.Discount=row.get('Disc. %',''),
+            model.Amount=row.get('Amount',''),
+            model.Per=row.get('per','')
+            model.Invoice_data=inv
+            model.save()
+        return Response(status=status.HTTP_201_CREATED)
+    def get(self, request, *args, **kwargs):
+        query = CSVInvoiceData.objects.latest('id')
+        serializer = Getcsvinvoicedata(query)
+        return Response(serializer.data)
 class UpdatecsvDataAPI(generics.RetrieveUpdateAPIView):
     serializer_class = Getcsvinvoicedata
     # authentication_classes = (SessionAuthentication,)
@@ -917,85 +1044,6 @@ class Voucherentry(APIView):
             newdate=datetime.date.strftime(d, "%Y%m%d")
             y=-(float(request.data['Voucher_amount_dr']))
             serializer.save(Voucher_amount_dr=y,is_verified=True)
-            # url='http://192.168.29.141:9000'
-            data='<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Import</TALLYREQUEST><TYPE>Data</TYPE><ID>Vouchers</ID></HEADER>'
-            data+='<BODY><DESC><STATICVARIABLES><SVCURRENTCOMPANY>'+str(serializer.data['company'])+'</SVCURRENTCOMPANY></STATICVARIABLES></DESC><DATA>'
-            data+='<TALLYMESSAGE><VOUCHER><DATE>'+str(newdate)
-            data+='</DATE><NARRATION>'+(serializer.data['Narration'])
-            data+='</NARRATION><VOUCHERTYPENAME>Payment</VOUCHERTYPENAME>'
-            data+='<ALLLEDGERENTRIES.LIST><LEDGERNAME>'+serializer.data['legdername']
-            data+='</LEDGERNAME><ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>'
-            data+='<AMOUNT>'+str(serializer.data['Voucher_amount_dr'])
-            data+='</AMOUNT></ALLLEDGERENTRIES.LIST><ALLLEDGERENTRIES.LIST>'
-            data+='<LEDGERNAME>'+str(serializer.data['Voucher_type'])
-            data+='</LEDGERNAME><ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>'
-            data+='<AMOUNT>'+str(serializer.data['Voucher_amount_cr'])
-            data+='</AMOUNT></ALLLEDGERENTRIES.LIST></VOUCHER>'
-            data+='</TALLYMESSAGE></DATA></BODY></ENVELOPE>'
-            req = requests.post(url=url, data=data)
-            if serializer.data['CGSTlegderdata'] and serializer.data['CGSTlegderdataamount']:
-                d = datetime.datetime.strptime(str(request.data['Voucher_date']), '%Y-%m-%d')
-                newdate=datetime.date.strftime(d, "%Y%m%d")
-                t=-(float(request.data['CGSTlegderdataamount']))
-                serializer.save(Voucher_amount_dr=y,is_verified=True)
-                # url='http://192.168.29.141:9000'
-                data='<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Import</TALLYREQUEST><TYPE>Data</TYPE><ID>Vouchers</ID></HEADER>'
-                data+='<BODY><DESC><STATICVARIABLES><SVCURRENTCOMPANY>'+str(serializer.data['company'])+'</SVCURRENTCOMPANY></STATICVARIABLES></DESC><DATA>'
-                data+='<TALLYMESSAGE><VOUCHER><DATE>'+str(newdate)
-                data+='</DATE><NARRATION>'+(serializer.data['Narration'])
-                data+='</NARRATION><VOUCHERTYPENAME>Payment</VOUCHERTYPENAME>'
-                data+='<ALLLEDGERENTRIES.LIST><LEDGERNAME>'+serializer.data['CGSTlegderdata']
-                data+='</LEDGERNAME><ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>'
-                data+='<AMOUNT>'+str(serializer.data['CGSTlegderdataamount'])
-                data+='</AMOUNT></ALLLEDGERENTRIES.LIST><ALLLEDGERENTRIES.LIST>'
-                data+='<LEDGERNAME>'+str(serializer.data['Voucher_type'])
-                data+='</LEDGERNAME><ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>'
-                data+='<AMOUNT>'+str(t)
-                data+='</AMOUNT></ALLLEDGERENTRIES.LIST></VOUCHER>'
-                data+='</TALLYMESSAGE></DATA></BODY></ENVELOPE>'
-                req = requests.post(url=url, data=data)
-                if serializer.data['SGSTlegderdata'] and serializer.data['SCGSTlegderdataamount']:
-                    d = datetime.datetime.strptime(str(request.data['Voucher_date']), '%Y-%m-%d')
-                    newdate=datetime.date.strftime(d, "%Y%m%d")
-                    x=-(float(request.data['SCGSTlegderdataamount']))
-                    # url='http://192.168.29.141:9000'
-                    data='<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Import</TALLYREQUEST><TYPE>Data</TYPE><ID>Vouchers</ID></HEADER>'
-                    data+='<BODY><DESC><STATICVARIABLES><SVCURRENTCOMPANY>'+str(serializer.data['company'])+'</SVCURRENTCOMPANY></STATICVARIABLES></DESC><DATA>'
-                    data+='<TALLYMESSAGE><VOUCHER><DATE>'+str(newdate)
-                    data+='</DATE><NARRATION>'+(serializer.data['Narration'])
-                    data+='</NARRATION><VOUCHERTYPENAME>Payment</VOUCHERTYPENAME>'
-                    data+='<ALLLEDGERENTRIES.LIST><LEDGERNAME>'+serializer.data['SGSTlegderdata']
-                    data+='</LEDGERNAME><ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>'
-                    data+='<AMOUNT>'+str(serializer.data['SCGSTlegderdataamount'])
-                    data+='</AMOUNT></ALLLEDGERENTRIES.LIST><ALLLEDGERENTRIES.LIST>'
-                    data+='<LEDGERNAME>'+str(serializer.data['Voucher_type'])
-                    data+='</LEDGERNAME><ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>'
-                    data+='<AMOUNT>'+str(x)
-                    data+='</AMOUNT></ALLLEDGERENTRIES.LIST></VOUCHER>'
-                    data+='</TALLYMESSAGE></DATA></BODY></ENVELOPE>'
-                    req = requests.post(url=url, data=data)
-            elif serializer.data['IGSTlegderdata'] and serializer.data['IGSTlegderdataamount']:
-                d = datetime.datetime.strptime(str(request.data['Voucher_date']), '%Y-%m-%d')
-                newdate=datetime.date.strftime(d, "%Y%m%d")
-                y=-(float(request.data['IGSTlegderdataamount']))
-                # url='http://192.168.29.141:9000'
-                data='<ENVELOPE><HEADER><VERSION>1</VERSION><TALLYREQUEST>Import</TALLYREQUEST><TYPE>Data</TYPE><ID>Vouchers</ID></HEADER>'
-                data+='<BODY><DESC><STATICVARIABLES><SVCURRENTCOMPANY>'+str(serializer.data['company'])+'</SVCURRENTCOMPANY></STATICVARIABLES></DESC><DATA>'
-                data+='<TALLYMESSAGE><VOUCHER><DATE>'+str(newdate)
-                data+='</DATE><NARRATION>'+(serializer.data['Narration'])
-                data+='</NARRATION><VOUCHERTYPENAME>Payment</VOUCHERTYPENAME>'
-                data+='<ALLLEDGERENTRIES.LIST><LEDGERNAME>'+serializer.data['IGSTlegderdata']
-                data+='</LEDGERNAME><ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>'
-                data+='<AMOUNT>'+str(serializer.data['IGSTlegderdataamount'])
-                data+='</AMOUNT></ALLLEDGERENTRIES.LIST><ALLLEDGERENTRIES.LIST>'
-                data+='<LEDGERNAME>'+str(serializer.data['Voucher_type'])
-                data+='</LEDGERNAME><ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>'
-                data+='<AMOUNT>'+str(y)
-                data+='</AMOUNT></ALLLEDGERENTRIES.LIST></VOUCHER>'
-                data+='</TALLYMESSAGE></DATA></BODY></ENVELOPE>'
-                req = requests.post(url=url, data=data)
-            else:
-                pass
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class PaymentVoucherentry(APIView):

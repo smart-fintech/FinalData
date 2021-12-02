@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import Buyerdataeditdelete,Invoicetotal, PaymentVouchereditdelete,PaymentVoucherentry,InvoiceOtherdata,MainInvoiceShow,UpdateHsndetails, Voucherentry,CreateInvoicefilter, BuyerDetailsView, SellerDetailsView, InvoiceDetailsView, InvoiceDataView,CsvInvoicedataAPI,GetcsvInvoicedataAPI,UploadCSVView,UpdatecsvDataAPI,NewMainInvoiceShow,LegderShow,CompanyShow,Sellerdataeditdelete,Invoiceeeditdelete,Invoicedataeeditdelete,ReceiptReportViews,ReceiptInvoicefilter
+from .views import Buyerdataeditdelete,Invoicetotal,TabledataAPI,AmazonTabledataAPI,CsvamazonInvoicedataAPI,PaymentVouchereditdelete,PaymentVoucherentry,InvoiceOtherdata,MainInvoiceShow,UpdateHsndetails, Voucherentry,CreateInvoicefilter, BuyerDetailsView, SellerDetailsView, InvoiceDetailsView, InvoiceDataView,CsvInvoicedataAPI,GetcsvInvoicedataAPI,UploadCSVView,UpdatecsvDataAPI,NewMainInvoiceShow,LegderShow,CompanyShow,Sellerdataeditdelete,Invoiceeeditdelete,Invoicedataeeditdelete,ReceiptReportViews,ReceiptInvoicefilter
 
 urlpatterns = [
     path('receiptinvoice/', ReceiptReportViews.as_view(), name='receiptinvoice'),
@@ -13,6 +13,9 @@ urlpatterns = [
     path('invoicedata/', InvoiceDataView.as_view(), name='invoicedata'),
     path('csvinvoice/',CsvInvoicedataAPI.as_view(), name='csvinvoice'),
     path('getcsvinvoice/',GetcsvInvoicedataAPI.as_view(), name='getcsvinvoice'),
+    path('amazoninvoice/',CsvamazonInvoicedataAPI.as_view(),name='amazoninvoice'),
+    path('Tabledata/',TabledataAPI.as_view(),name='Tabledata'),
+    path('AmazonTabledata/',AmazonTabledataAPI.as_view(),name='AmazonTabledata'),
     path('maininvoice/', MainInvoiceShow.as_view(), name='maininvoice'),
     path('UploadCSVView/', UploadCSVView.as_view(), name='UploadCSVView'),
     path('UpdateHsndetails/<int:pk>/',UpdateHsndetails.as_view(),name='UpdateHsndetails'),

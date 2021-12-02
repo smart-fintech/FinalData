@@ -139,19 +139,19 @@ class CSVInvoiceData(models.Model):
     StateCode=models.CharField(max_length=10,null=True, blank=True)
     class Meta:
         unique_together = ('invoice_no','invoice_date')
-    def __str__(self):
-        return self.invoice_no
+    # def __str__(self):
+    #     return self.invoice_no
 
     @property
     def csvreceipt(self):
         return self.csvtabledata_set.all()
 
-class CSvTableData(models.Model):
+class CSVTableData(models.Model):
     Invoice_data=models.ForeignKey(CSVInvoiceData,on_delete=models.CASCADE)
     Products = models.TextField(null=True, blank=True)
     HSN_SAC=models.CharField(max_length=20,null=True,blank=True)
-    GST_rate=models.IntegerField(null=True,blank=True)
-    quantity = models.IntegerField(null=True, blank=True)
+    GST_rate=models.CharField(max_length=20,null=True,blank=True)
+    quantity = models.CharField(max_length=20,null=True, blank=True)
     Rate=models.CharField(max_length=100,null=True,blank=True)
     Per=models.CharField(max_length=100,null=True,blank=True)
     Discount=models.CharField(max_length=100,null=True,blank=True)
