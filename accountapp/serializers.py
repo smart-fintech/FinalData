@@ -106,7 +106,11 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['token']
-
+        
+class PortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=['port_num']
 
 # serializer for user login
 class LoginSerializer(serializers.ModelSerializer):
