@@ -161,29 +161,22 @@ class CSVTableData(models.Model):
         return self.Products
 
 
-Choices={('CONTRA VOUCHER','CONTRA VOUCHER'),
-            ('PURCHASE VOUCHER','PURCHASE VOUCHER'),('RECEIPT VOUCHER','RECEIPT VOUCHER'),('JOURNAL VOUCHER','JOURNAL VOUCHER'),
-            ('SALES VOUCHER','SALES VOUCHER'),('PAYMENT VOUCHER','PAYMENT VOUCHER'),('CREDIT NOTE VOUCHER','CREDIT NOTE VOUCHER'),
-            ('DEBIT NOTE VOUCHER','DEBIT NOTE VOUCHER')}
-
-
 class VoucherInvoiceEntry(models.Model):
-    company=models.CharField(max_length=30,null=True,blank=True)
+    company=models.ForeignKey(companydata,on_delete=models.CASCADE,null=True,blank=True)
     Voucher_date=models.DateField(blank=True,null=True)
     legdername=models.CharField(max_length=50,blank=True,null=True)
-    Voucher_type=models.CharField(max_length=50,null=True,blank=True)
     Voucher_amount_cr=models.DecimalField(max_digits=15,null=True,blank=True,decimal_places=2)
     Voucher_amount_dr=models.DecimalField(max_digits=15,null=True,blank=True,decimal_places=2)
-    Narration=models.TextField(blank=True,null=True)
+    Narration=models.CharField(max_length=50,blank=True,null=True)
     CGSTlegderdata=models.CharField(max_length=50,blank=True,null=True)
     CGSTlegderamount=models.DecimalField(max_digits=15,null=True,blank=True,decimal_places=2)
     SGSTlegderdata=models.CharField(max_length=50,blank=True,null=True)
     SGSTlegderamount=models.DecimalField(max_digits=15,null=True,blank=True,decimal_places=2)
     IGSTlegderdata=models.CharField(max_length=50,blank=True,null=True)
     IGSTlegderamount=models.DecimalField(max_digits=15,null=True,blank=True,decimal_places=2)
-    Vouchetype=models.CharField(choices=Choices,max_length=100,null=True,blank=True)
+    Voucher_type=models.CharField(max_length=100,null=True,blank=True)
+    Vouchetype=models.CharField(max_length=100,null=True,blank=True)
     is_verified=models.BooleanField(null=True,blank=True,default=False)
     def __str__(self):
         return self.legdername
-
     
