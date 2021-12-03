@@ -9,6 +9,7 @@ UserRegisterSerializer,
 UserLoginSerializer,
 admingetotheruserdataserializer,
 Updateuserserializer,
+PortSerializer,
 )
 from django.shortcuts import render,HttpResponse
 from django.http import Http404
@@ -218,3 +219,22 @@ class UpdateUser(APIView):
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class PortAPI(generics.CreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    def post(self, request):
+        login_user=request.user
+        mod=User.objects.get(email=login_user)
+        serializer = PortSerializer(data=request.data)
+        serializer.is_valid()
+        if request.data['port_num']!='':
+            mod.port_num=request.data['port_num']
+            mod.save()
+        else:
+            mod.port_num='9000'
+            mod.save()
+        return Response(status=status.HTTP_200_OK)
+    def get(self, request, format=None):
+        login_user=request.user
+        snippet = User.objects.get(email=login_user)
+        serializer = PortSerializer(snippet)
+        return Response(serializer.data)
