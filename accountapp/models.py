@@ -60,6 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_views = models.BooleanField(null=True)
     created_by=models.CharField(max_length=50,blank=True, null=True)
     # groups = models.ForeignKey(Group,blank=True,null=True,on_delete=models.DO_NOTHING)
+    port_num=models.CharField(max_length=50,blank=True, null=True,default='9000')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     # auth_provider = models.CharField(
