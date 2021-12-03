@@ -611,27 +611,6 @@ class CsvInvoicedataAPI(generics.ListCreateAPIView):
         else:
             pass
         inv.save()
-        # name_of_file=str(settings.BASE_DIR)+'/media/tabula/tabula-Accounting Voucher Display.pdfDIGITAL3.csv'
-        # file=open(name_of_file,'r')
-        # df=pd.read_csv(file)
-        # newdf=df.dropna(thresh=df.shape[1]-6, axis=0)
-        # newdf.to_csv(name_of_file)
-        # file=open(name_of_file,'r')
-        # inv=CSVInvoiceData.objects.latest('id')
-        # csv_reader = csv.DictReader(file)
-        # for row in csv_reader:
-        #     model=CSVTableData.objects.create(
-        #                     Products=row.get('Description of Goods',''),
-        #                     HSN_SAC=row.get('HSN/SAC',''),
-        #                     GST_rate=row.get('GST',''),
-        #                     Rate=row.get('Rate',''),
-        #                     quantity=row.get('Quantity',''),
-        #                     Discount=row.get('Disc. %',''),
-        #                     Amount=row.get('Amount',''),
-        #                     Per=row.get('per','')
-        #                     )
-        #     model.Invoice_data=inv
-        #     model.save()
         return Response(status=status.HTTP_201_CREATED)
     def get(self, request, *args, **kwargs):
         query = CSVInvoiceData.objects.latest('id')
@@ -893,35 +872,6 @@ class CsvamazonInvoicedataAPI(generics.ListCreateAPIView):
         inv.subtotal=main_dict['Total']
         inv.file=request.data['file']
         inv.save()
-        # name_of_file=str(settings.BASE_DIR)+'/media/tabula/tabula-amz invoice 040421.csv'
-        # file=open(name_of_file,'r')
-        # df=pd.read_csv(file)
-        # file=open(name_of_file,'r')
-        # df=pd.read_csv(file)
-        # df.columns = [x.strip().replace('\r', '') for x in df.columns]
-        # df.columns = [x.strip().replace('\n', '') for x in df.columns]
-        # newdf=df.dropna(thresh=df.shape[1]-6, axis=0)
-        # newdf = newdf[newdf['Description'] != 'Description']
-        # newdf.replace(to_replace="\\r[$&+,:;=?@#|'<>.^*%!-]\₹\d{1,}[.]\d{1,}|\\r\₹\d{1,}[.]\d{1,}|\\r\d{1,}\W|\\rIGST|\\rCGST|\\rSGST|\\r|\\n[$&+,:;=?@#|'<>.^*%!-]\₹\d{1,}[.]\d{1,}|\\n\₹\d{1,}[.]\d{1,}|\\n\d{1,}\W|\\nIGST|\\nCGST|\\nSGST|\\n", value="", regex=True, inplace=True)
-        # newdf.to_csv(name_of_file)
-        # file=open(name_of_file,'r')
-        # inv=CSVInvoiceData.objects.latest('id')
-        # csv_reader = csv.DictReader(file)
-        # for row in csv_reader:
-        #     print('ggg')
-        #     model=CSVTableData.objects.create(
-        #                     Products=row.get('Description',''),
-        #                     HSN_SAC=row.get('HSN/SAC',''),
-        #                     GST_rate=row.get('TaxRate',''),
-        #                     Rate=row.get('UnitPrice',''),
-        #                     quantity=row.get('Qty',''),
-        #                     Discount=row.get('Discount',''),
-        #                     Amount=row.get('NetAmount',''),
-        #                     Per=row.get('per','')
-        #                     )
-        #     model.Invoice_data=inv
-        #     model.save()
-        #     print('gfhj')
         return Response(status=status.HTTP_201_CREATED)
     def get(self, request, *args, **kwargs):
         query = CSVInvoiceData.objects.latest('id')
@@ -1036,16 +986,34 @@ class CreateInvoicefilter(generics.ListAPIView):
 class Voucherentry(APIView):
     # permission_classes = (IsAuthenticated,)
     serializer_class = VoucherInvoiceDataSerializer
-
     def post(self, request, format=None):
         serializer = VoucherInvoiceDataSerializer(data=request.data)
-        if serializer.is_valid():
-            d = datetime.datetime.strptime(str(request.data['Voucher_date']), '%Y-%m-%d')
-            newdate=datetime.date.strftime(d, "%Y%m%d")
-            y=-(float(request.data['Voucher_amount_dr']))
-            serializer.save(Voucher_amount_dr=y,is_verified=True)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        login_user=request.user
+        print(login_user)
+        comp=companydata.objects.get(user_company=login_user)
+        serializer.is_valid()
+        # date=request.data['Voucher_date']
+        # date_time_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+        model=VoucherInvoiceEntry()
+        model.Voucher_date=request.data['Voucher_date']
+        model.Voucher_type=request.data['Voucher_type']
+        model.legdername=request.data['legdername']
+        model.Voucher_amount_cr=request.data['Voucher_amount_cr']
+        model.Voucher_amount_dr=request.data['Voucher_amount_dr']
+        model.Narration=request.data['Narration']
+        model.Vouchetype=request.data['Vouchetype']
+        if request.data['IGSTlegderamount']!=0.00:
+            model.IGSTlegderdata=request.data['IGSTlegderdata']
+            model.IGSTlegderamount=request.data['IGSTlegderamount']
+        else:
+            model.CGSTlegderdata=request.data['CGSTlegderdata']
+            model.CGSTlegderamount=request.data['CGSTlegderamount']
+            model.SGSTlegderdata=request.data['SGSTlegderdata']
+            model.SGSTlegderamount=request.data['SGSTlegderamount']
+        model.is_verified=True
+        model.company=comp
+        model.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 class PaymentVoucherentry(APIView):
     # permission_classes = (IsAuthenticated,)
     serializer_class = PaymentVoucherDataSerializer
